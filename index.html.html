@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OVERSEAS GLOBAL – Product Traceability</title>
+<style>
+:root{--navy:#0b2a4a;--gold:#c9a227;--bg:#eef2f6;--card:#fff;--ink:#16202b;--mute:#6b7785;--ok:#1a8f4c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:460px;margin:0 auto;padding:0 0 32px}
+header{background:var(--navy);color:#fff;text-align:center;padding:28px 16px 40px}
+.logo{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);color:var(--gold);font-weight:800;font-size:24px;letter-spacing:1px}
+header h1{margin:12px 0 4px;font-size:20px;letter-spacing:2px}
+header p{margin:0;font-size:12px;letter-spacing:3px;color:#b9c7d8}
+.card{background:var(--card);border-radius:16px;margin:-24px 14px 14px;padding:20px;box-shadow:0 4px 16px rgba(11,42,74,.10)}
+.card+.card{margin-top:0}
+.badge{display:inline-block;background:#e6f5ec;color:var(--ok);font-weight:700;font-size:13px;padding:6px 14px;border-radius:20px}
+.lbl{font-size:11px;letter-spacing:2px;color:var(--mute);text-transform:uppercase;margin-top:16px}
+.big{font-size:26px;font-weight:800;color:var(--navy);word-break:break-all;margin-top:4px}
+.sub{font-size:13px;color:var(--mute)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:#f5f8fb;border-radius:12px;padding:14px}
+.tile .big{font-size:24px}
+h2{font-size:14px;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);margin:0 0 8px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #e8edf2;font-size:14px}
+.row:last-child{border:0}
+.row span:first-child{color:var(--mute)}
+.row span:last-child{font-weight:600;text-align:right}
+.ok{text-align:center;color:var(--ok);font-weight:700;padding:6px 0}
+footer{text-align:center;font-size:11px;letter-spacing:2px;color:var(--mute);margin-top:8px}
+/* generator */
+.gen{padding:20px 14px}
+.gen h1{color:var(--navy);font-size:20px}
+label{display:block;font-size:12px;color:var(--mute);margin:12px 0 4px}
+input{width:100%;padding:11px;border:1px solid #cdd6df;border-radius:8px;font-size:15px}
+button{margin-top:16px;padding:12px 18px;border:0;border-radius:8px;background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+button.alt{background:var(--gold);color:#222}
+#out{display:none;text-align:center;margin-top:20px}
+#qr{display:inline-block;padding:14px;background:#fff;border-radius:12px}
+#link{word-break:break-all;font-size:12px;color:var(--mute);margin-top:10px;text-align:left;direction:ltr}
+.note{font-size:12px;color:var(--mute);margin-top:6px}
+@media print{body{background:#fff}.gen>*:not(#out){display:none}#out button,#link{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const P = new URLSearchParams(location.search);
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+if (P.get('id') && !P.get('gen')) {
+  const g = k => P.get(k) || '—';
+  const rows = [
+    ['Production Line', g('l')],
+    ['Production Date', g('pd')],
+    ['Shipping Date',   g('sd')],
+    ['Batch',           g('bt')],
+    ['Incoterm',        g('inc')]
+  ].map(r => `<div class="row"><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
+  document.title = 'OG · ' + P.get('id');
+  app.innerHTML = `
+  <header>
+    <div class="logo">OG</div>
+    <h1>OVERSEAS GLOBAL</h1>
+    <p>PRODUCT TRACEABILITY</p>
+  </header>
+  <div class="card" style="text-align:center">
+    <span class="badge">✓ VERIFIED</span>
+    <div class="lbl">Bulk / Batch ID</div>
+    <div class="big">${esc(P.get('id'))}</div>
+  </div>
+  <div class="card">
+    <div class="grid">
+      <div class="tile"><div class="lbl" style="margin-top:0">Net Weight</div>
+        <div class="big">${esc(g('w'))}</div><div class="sub">${esc(g('b'))}</div></div>
+      <div class="tile"><div class="lbl" style="margin-top:0">Client Code</div>
+        <div class="big">${esc(g('c'))}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Production Data</h2>${rows}
+    <div class="ok">✓ Product data registered</div>
+  </div>
+  <footer>OVERSEAS GLOBAL · PRODUCT INFORMATION</footer>`;
+} else {
+  const base = location.protocol.startsWith('http') ? location.origin + location.pathname : '';
+  app.innerHTML = `
+  <div class="gen">
+    <h1>OG · QR Label Generator / مولّد الـ QR</h1>
+    <label>Tracking page URL (where you host this file) / رابط الصفحة بعد الرفع</label>
+    <input id="base" value="${esc(base)}" placeholder="https://yourdomain.com/og-tracking.html" dir="ltr">
+    <label>Bulk / Batch ID</label><input id="id" value="OG-P004-B01-001">
+    <label>Net Weight</label><input id="w" value="1.25 T">
+    <label>Bags</label><input id="b" value="50 × 25 kg">
+    <label>Client Code</label><input id="c" value="P004">
+    <label>Production Line</label><input id="l" value="Indian Press">
+    <label>Production Date</label><input id="pd" value="24-11-2026">
+    <label>Shipping Date</label><input id="sd" value="30-11-2026">
+    <label>Batch</label><input id="bt" value="B01">
+    <label>Incoterm</label><input id="inc" value="EXW">
+    <button id="go">Generate QR</button>
+    <div id="out">
+      <div id="qr"></div>
+      <div id="link"></div>
+      <button id="dl">Download PNG</button>
+      <button class="alt" onclick="window.print()">Print</button>
+      <div class="note">Test by scanning with your phone before printing.</div>
+    </div>
+  </div>`;
+  const keys = ['id','w','b','c','l','pd','sd','bt','inc'];
+  document.getElementById('go').onclick = () => {
+    let base = document.getElementById('base').value.trim();
+    if (!base) { alert('Enter the tracking page URL first.'); return; }
+    const q = new URLSearchParams();
+    keys.forEach(k => q.set(k, document.getElementById(k).value.trim()));
+    const url = base + '?' + q.toString();
+    const box = document.getElementById('qr'); box.innerHTML = '';
+    new QRCode(box, {text: url, width: 260, height: 260, correctLevel: QRCode.CorrectLevel.M});
+    document.getElementById('link').textContent = url;
+    document.getElementById('out').style.display = 'block';
+  };
+  document.getElementById('dl').onclick = () => {
+    const c = document.querySelector('#qr canvas');
+    const a = document.createElement('a');
+    a.href = c.toDataURL('image/png');
+    a.download = (document.getElementById('id').value || 'qr') + '.png';
+    a.click();
+  };
+}
+</script>
+</body>
+</html>
