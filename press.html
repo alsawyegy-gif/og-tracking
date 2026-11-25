@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OG · ترصيد المكبس</title>
+<style>
+:root{--navy:#0b2a4a;--gold:#c9a227;--bg:#eef2f6;--mute:#6b7785;--ok:#1a8f4c;--err:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16202b}
+.top{background:var(--navy);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.top b{letter-spacing:1px}
+.top button{background:none;border:0;color:#b9c7d8;font-size:20px}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea}
+.tabs button{flex:1;padding:13px 4px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
+.tabs button.on{color:var(--navy);border-color:var(--gold)}
+.wrap{max-width:520px;margin:0 auto;padding:14px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,42,74,.07)}
+label.t{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px}
+label.t:first-child{margin-top:0}
+input[type=text],input[type=number],input[type=password],select{width:100%;padding:13px;border:1px solid #cdd6df;border-radius:10px;font-size:18px;background:#fff}
+input.big{font-size:30px;font-weight:700;text-align:center}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:30%;padding:14px 6px;border:2px solid #cdd6df;background:#fff;border-radius:10px;font-size:15px;font-weight:600}
+.seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.go{width:100%;padding:16px;border:0;border-radius:12px;background:var(--gold);color:#222;font-size:18px;font-weight:800;margin-top:16px}
+.go:disabled{opacity:.5}
+.msg{padding:10px;border-radius:8px;margin-top:10px;font-size:14px;display:none}
+.msg.err{display:block;background:#fdecea;color:var(--err)}
+.res{text-align:center}
+.res .id{font-size:24px;font-weight:800;color:var(--navy);direction:ltr}
+.res .st{display:inline-block;background:#e6f5ec;color:var(--ok);padding:4px 12px;border-radius:14px;font-weight:700;font-size:13px;margin:6px 0}
+#rqr{display:inline-block;padding:10px;background:#fff;margin-top:8px}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eef1f4;font-size:14px}
+.row:last-child{border:0}
+.row .m{flex:1}
+.row .m b{direction:ltr;display:inline-block}
+.row .m small{color:var(--mute);display:block}
+.row .w{font-weight:800;direction:ltr}
+.row input{width:22px;height:22px}
+.sum{display:flex;justify-content:space-between;font-weight:700;padding:6px 0;color:var(--navy)}
+.sec{display:none}.sec.on{display:block}
+.pill{font-size:11px;padding:2px 8px;border-radius:10px;background:#eef2f6;color:var(--mute)}
+.pill.w{background:#fff4d6;color:#8a6d00}
+/* printing */
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block}
+  .sheet{width:210mm;height:297mm;display:grid;grid-template-columns:105mm 105mm;grid-template-rows:repeat(3,99mm);page-break-after:always}
+  .lab{border:0.3mm dashed #999;padding:5mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
+  .lab .lid{font-size:17pt;font-weight:800;direction:ltr;font-family:Arial,sans-serif}
+  .lab .lq{line-height:0}
+  .lab .lw{font-size:22pt;font-weight:800;direction:ltr}
+  .lab .li{font-size:10pt;direction:ltr;line-height:1.35}
+}
+</style>
+</head>
+<body>
+<div class="top"><b>OG · PRESS</b><button onclick="show('setup')" title="Settings">⚙</button></div>
+<div class="tabs" id="tabs">
+  <button data-v="reg" class="on">ترصيد</button>
+  <button data-v="list">اليوم</button>
+  <button data-v="lab">ملصقات</button>
+</div>
+<div class="wrap">
+
+<!-- setup -->
+<div class="sec" id="v-setup"><div class="card">
+  <label class="t">رابط السيستم (Apps Script URL)</label>
+  <input type="text" id="s-api" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec">
+  <label class="t">الرقم السري PIN</label>
+  <input type="password" id="s-pin" dir="ltr">
+  <button class="go" id="s-save">حفظ</button>
+  <div class="msg" id="s-msg"></div>
+</div></div>
+
+<!-- register -->
+<div class="sec on" id="v-reg">
+  <div class="card">
+    <label class="t">المكبس</label>
+    <div class="seg" id="g-press">
+      <button data-v="Indian" class="on">هندي</button>
+      <button data-v="Turkish">تركي</button>
+    </div>
+    <label class="t">نوع الجامبو</label>
+    <div class="seg" id="g-type">
+      <button data-v="Sound" class="on">أقراص سليمة</button>
+      <button data-v="Mixed waste">هالك مخلوط</button>
+      <button data-v="Full output">إنتاج كامل</button>
+    </div>
+    <label class="t">مورد الخام</label>
+    <select id="supplier"><option value="">— اختر —</option></select>
+    <label class="t">الحجز</label>
+    <div class="seg" id="g-res">
+      <button data-v="Stock" class="on">ستوك</button>
+      <button data-v="Client">لعميل</button>
+    </div>
+    <input type="text" id="client" dir="ltr" placeholder="كود العميل مثال: P004" style="display:none;margin-top:8px">
+    <label class="t">الوزن (كجم)</label>
+    <input type="number" id="weight" class="big" inputmode="decimal" placeholder="0">
+    <button class="go" id="save">حفظ وإصدار كود</button>
+    <div class="msg" id="r-msg"></div>
+  </div>
+  <div class="card res" id="result" style="display:none">
+    <div class="st" id="r-st"></div>
+    <div class="id" id="r-id"></div>
+    <div id="rqr"></div>
+    <div style="font-size:13px;color:var(--mute);margin-top:8px">اتحفظ. روح لتبويب "ملصقات" للطباعة.</div>
+  </div>
+</div>
+
+<!-- list -->
+<div class="sec" id="v-list">
+  <div class="card"><div id="sum"></div><div id="rows"></div></div>
+</div>
+
+<!-- labels -->
+<div class="sec" id="v-lab">
+  <div class="card">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="go" style="margin:0;background:#e9eef3;color:var(--navy)" id="selToday">اختار اليوم</button>
+      <button class="go" style="margin:0" id="printBtn">طباعة</button>
+    </div>
+    <div style="font-size:12px;color:var(--mute)">كل صفحة A4 = 6 ملصقات. وفي نافذة الطباعة اختر Margins: None و Scale: 100%.</div>
+    <div id="lrows"></div>
+  </div>
+</div>
+
+</div>
+<div id="printArea"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const LS = {
+  get: k => { try { return localStorage.getItem(k) } catch (e) { return null } },
+  set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }
+};
+let API = LS.get('og_api') || '', PIN = LS.get('og_pin') || '';
+const TYPE_AR = {'Sound':'أقراص سليمة','Mixed waste':'هالك مخلوط','Full output':'إنتاج كامل'};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let ROWS = [];
+
+function show(v) {
+  document.querySelectorAll('.sec').forEach(e => e.classList.remove('on'));
+  $('#v-' + v).classList.add('on');
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  if (v === 'list' || v === 'lab') loadList();
+}
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.v));
+
+function seg(id, cb) {
+  document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); if (cb) cb(b.dataset.v);
+  });
+}
+const val = id => document.querySelector('#' + id + ' button.on').dataset.v;
+seg('g-press'); seg('g-type');
+seg('g-res', v => { $('#client').style.display = v === 'Client' ? 'block' : 'none'; });
+
+async function api(params, body) {
+  if (!API) throw new Error('حط رابط السيستم من ⚙');
+  let r;
+  if (body) {
+    r = await fetch(API, { method: 'POST', body: JSON.stringify(Object.assign({ pin: PIN }, body)) });
+  } else {
+    r = await fetch(API + '?' + new URLSearchParams(Object.assign({ pin: PIN }, params)));
+  }
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error === 'PIN' ? 'الرقم السري غلط' : 'خطأ: ' + j.error);
+  return j;
+}
+
+// setup
+$('#s-api').value = API; $('#s-pin').value = PIN;
+$('#s-save').onclick = async () => {
+  API = $('#s-api').value.trim(); PIN = $('#s-pin').value.trim();
+  LS.set('og_api', API); LS.set('og_pin', PIN);
+  const m = $('#s-msg'); m.className = 'msg';
+  try { await loadSuppliers(); show('reg'); }
+  catch (e) { m.textContent = e.message; m.className = 'msg err'; }
+};
+
+async function loadSuppliers() {
+  const j = await api({ action: 'settings' });
+  const sel = $('#supplier'), cur = sel.value;
+  sel.innerHTML = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+// save jumbo
+$('#save').onclick = async () => {
+  const m = $('#r-msg'); m.className = 'msg';
+  const w = Number($('#weight').value), sup = $('#supplier').value;
+  const res = val('g-res') === 'Client' ? $('#client').value.trim().toUpperCase() : 'Stock';
+  if (!(w > 0)) { m.textContent = 'اكتب الوزن'; m.className = 'msg err'; return; }
+  if (!sup) { m.textContent = 'اختار المورد'; m.className = 'msg err'; return; }
+  if (!res) { m.textContent = 'اكتب كود العميل'; m.className = 'msg err'; return; }
+  const b = $('#save'); b.disabled = true;
+  try {
+    const j = await api(null, { press: val('g-press'), type: val('g-type'), supplier: sup, weight: w, reservation: res });
+    $('#r-id').textContent = j.id;
+    $('#r-st').textContent = j.status === 'Needs sieving' ? 'يحتاج غربلة' : 'جاهز للتعبئة';
+    $('#rqr').innerHTML = '';
+    new QRCode($('#rqr'), { text: j.id, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+    $('#result').style.display = 'block';
+    $('#weight').value = ''; $('#weight').focus();
+  } catch (e) { m.textContent = e.message; m.className = 'msg err'; }
+  b.disabled = false;
+};
+
+// list
+async function loadList() {
+  try { ROWS = (await api({ action: 'list', limit: 120 })).rows; } catch (e) { return; }
+  const today = ROWS.filter(r => r.Date === new Date().toLocaleDateString('sv-SE'));
+  const tot = a => a.reduce((s, r) => s + Number(r.Weight_kg || 0), 0);
+  $('#sum').innerHTML = `<div class="sum"><span>جامبوهات اليوم: ${today.length}</span><span dir="ltr">${tot(today).toLocaleString()} kg</span></div>`;
+  $('#rows').innerHTML = ROWS.map(r => `
+    <div class="row"><div class="m"><b>${esc(r.ID)}</b>
+    <small>${esc(r.Press)} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
+    <small>${esc(r.Date)} · ${esc(r.Reservation)}</small></div>
+    <div class="w">${Number(r.Weight_kg).toLocaleString()}</div></div>`).join('') || '<div style="padding:10px;color:#6b7785">مفيش جامبوهات لسه</div>';
+  $('#lrows').innerHTML = ROWS.map((r, i) => `
+    <label class="row"><input type="checkbox" data-i="${i}">
+    <div class="m"><b>${esc(r.ID)}</b><small>${esc(r.Date)} · ${esc(r.Supplier)}</small></div>
+    <div class="w">${Number(r.Weight_kg).toLocaleString()}</div></label>`).join('');
+}
+
+$('#selToday').onclick = () => {
+  const t = new Date().toLocaleDateString('sv-SE');
+  document.querySelectorAll('#lrows input').forEach(c => { c.checked = ROWS[c.dataset.i].Date === t; });
+};
+
+$('#printBtn').onclick = () => {
+  const sel = [...document.querySelectorAll('#lrows input:checked')].map(c => ROWS[c.dataset.i]);
+  if (!sel.length) { alert('اختار جامبو واحد على الأقل'); return; }
+  const pa = $('#printArea'); pa.innerHTML = '';
+  for (let i = 0; i < sel.length; i += 6) {
+    const sh = document.createElement('div'); sh.className = 'sheet';
+    sel.slice(i, i + 6).forEach(r => {
+      const d = document.createElement('div'); d.className = 'lab';
+      d.innerHTML = `<div class="lid">${esc(r.ID)}</div><div class="lq"></div>
+        <div class="lw">${Number(r.Weight_kg).toLocaleString()} kg</div>
+        <div class="li">${esc(r.Press)} Press · ${esc(r.Type)}<br>${esc(r.Supplier)} · ${esc(r.Date)}<br>${esc(r.Reservation)}</div>`;
+      new QRCode(d.querySelector('.lq'), { text: r.ID, width: 170, height: 170, correctLevel: QRCode.CorrectLevel.M });
+      sh.appendChild(d);
+    });
+    pa.appendChild(sh);
+  }
+  setTimeout(() => window.print(), 400);
+};
+
+// init
+if (API) loadSuppliers().catch(() => {}); else show('setup');
+</script>
+</body>
+</html>
