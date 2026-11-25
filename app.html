@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OG · نظام المخازن</title>
+<style>
+:root{--navy:#0b2a4a;--gold:#c9a227;--bg:#eef2f6;--mute:#6b7785;--ok:#1a8f4c;--err:#c0392b;--warn:#b7791f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16202b}
+.top{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.top b{letter-spacing:1px}
+.top span{font-size:13px;color:#b9c7d8}
+.top button{background:none;border:0;color:#b9c7d8;font-size:14px;margin-inline-start:10px}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea}
+.tabs button{flex:1;padding:13px 4px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
+.tabs button.on{color:var(--navy);border-color:var(--gold)}
+.wrap{max-width:520px;margin:0 auto;padding:14px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,42,74,.07)}
+label.t{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px}
+label.t:first-child{margin-top:0}
+input[type=text],input[type=number],input[type=password],select{width:100%;padding:13px;border:1px solid #cdd6df;border-radius:10px;font-size:18px;background:#fff}
+input.big{font-size:30px;font-weight:700;text-align:center}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:30%;padding:14px 6px;border:2px solid #cdd6df;background:#fff;border-radius:10px;font-size:15px;font-weight:600}
+.seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.go{width:100%;padding:16px;border:0;border-radius:12px;background:var(--gold);color:#222;font-size:18px;font-weight:800;margin-top:16px}
+.go:disabled{opacity:.5}
+.sm{padding:6px 10px;border:1px solid #cdd6df;background:#fff;border-radius:8px;font-size:12px;margin-inline-start:6px}
+.msg{padding:10px;border-radius:8px;margin-top:10px;font-size:14px;display:none}
+.msg.err{display:block;background:#fdecea;color:var(--err)}
+.msg.warn{display:block;background:#fff4d6;color:var(--warn)}
+.res{text-align:center;display:none}
+.res .id{font-size:26px;font-weight:800;color:var(--navy);direction:ltr}
+.res .st{display:inline-block;background:#e6f5ec;color:var(--ok);padding:4px 12px;border-radius:14px;font-weight:700;font-size:13px;margin:6px 0}
+.row{padding:10px 0;border-bottom:1px solid #eef1f4;font-size:14px;display:flex;gap:10px;align-items:center}
+.row:last-child{border:0}
+.row .m{flex:1}
+.row .m b{direction:ltr;display:inline-block}
+.row small{color:var(--mute);display:block}
+.row .w{font-weight:800;direction:ltr}
+.row.void{opacity:.45;text-decoration:line-through}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff4d6;color:var(--warn);margin-top:3px}
+.sum{display:flex;justify-content:space-between;font-weight:700;padding:5px 0;color:var(--navy)}
+h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
+.sec{display:none}.sec.on{display:block}
+</style>
+</head>
+<body>
+<div class="top"><b>OG · WAREHOUSE</b><div><span id="who"></span><button id="logout" style="display:none">خروج</button></div></div>
+<div class="tabs" id="tabs" style="display:none">
+  <button data-v="reg" class="on">تسجيل</button>
+  <button data-v="list">اليوم</button>
+  <button data-v="exc" id="t-exc" style="display:none">استثناءات</button>
+</div>
+<div class="wrap">
+
+<!-- login -->
+<div class="sec on" id="v-login"><div class="card">
+  <label class="t">الاسم</label>
+  <input type="text" id="l-name" autocomplete="username">
+  <label class="t">الرقم السري</label>
+  <input type="password" id="l-pin" autocomplete="current-password" inputmode="numeric">
+  <details style="margin-top:14px"><summary style="color:var(--mute);font-size:13px">إعدادات الربط</summary>
+    <label class="t">رابط السيستم (Apps Script URL)</label>
+    <input type="text" id="l-api" dir="ltr" placeholder="https://script.google.com/macros/s/.../exec">
+  </details>
+  <button class="go" id="l-go">دخول</button>
+  <div class="msg" id="l-msg"></div>
+</div></div>
+
+<!-- register -->
+<div class="sec" id="v-reg">
+  <div class="card">
+    <label class="t">المكبس</label>
+    <div class="seg" id="g-press"><button data-v="Indian" class="on">هندي</button><button data-v="Turkish">تركي</button></div>
+    <label class="t">نوع الجامبو</label>
+    <div class="seg" id="g-type">
+      <button data-v="Sound" class="on">أقراص سليمة</button>
+      <button data-v="Mixed waste">هالك مخلوط</button>
+      <button data-v="Full output">إنتاج كامل</button>
+    </div>
+    <label class="t">مورد الخام</label>
+    <select id="supplier"><option value="">— اختر —</option></select>
+    <label class="t">الحجز</label>
+    <div class="seg" id="g-res"><button data-v="Stock" class="on">ستوك</button><button data-v="Client">لعميل</button></div>
+    <input type="text" id="client" dir="ltr" placeholder="كود العميل مثال: P004" style="display:none;margin-top:8px">
+    <label class="t">الوزن (كجم)</label>
+    <input type="number" id="weight" class="big" inputmode="decimal" placeholder="0">
+    <div id="reasonBox" style="display:none">
+      <div class="msg warn" id="wWarn" style="display:block">الوزن خارج المعتاد. اكتب السبب:</div>
+      <select id="reason" style="margin-top:8px"></select>
+    </div>
+    <button class="go" id="save">حفظ</button>
+    <div class="msg" id="r-msg"></div>
+  </div>
+  <div class="card res" id="result">
+    <div class="st" id="r-st"></div>
+    <div class="id" id="r-id"></div>
+    <div style="font-size:13px;color:var(--mute);margin-top:6px">اتحفظ. (اختياري: اكتب الرقم على الجامبو بالماركر)</div>
+  </div>
+</div>
+
+<!-- list -->
+<div class="sec" id="v-list"><div class="card"><div id="sum"></div><div id="rows"></div></div></div>
+
+<!-- exceptions -->
+<div class="sec" id="v-exc">
+  <div class="card"><h3>الأرصدة (بدون الملغي)</h3><div id="bal"></div></div>
+  <div class="card"><h3>حسب المورد</h3><div id="bySup"></div></div>
+  <div class="card"><h3>الاستثناءات</h3><div id="excRows"></div></div>
+</div>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const LS = {
+  get: k => { try { return localStorage.getItem(k) } catch (e) { return null } },
+  set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} },
+  del: k => { try { localStorage.removeItem(k) } catch (e) {} }
+};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TYPE_AR = {'Sound':'أقراص سليمة','Mixed waste':'هالك مخلوط','Full output':'إنتاج كامل'};
+const PRESS_AR = {'Indian':'هندي','Turkish':'تركي'};
+const ST_AR = {'Ready for packing':'جاهز للتعبئة','Needs sieving':'يحتاج غربلة','Void':'ملغي'};
+const fmt = n => Number(n || 0).toLocaleString('en');
+
+let API = LS.get('og_api') || '', U = LS.get('og_user') || '', P = LS.get('og_pin') || '';
+let ME = null, CFG = null, ROWS = [];
+
+async function api(action, data) {
+  if (!API) throw new Error('حط رابط السيستم في "إعدادات الربط"');
+  const r = await fetch(API, { method: 'POST', body: JSON.stringify(Object.assign({ user: U, pin: P, action }, data || {})) });
+  const j = await r.json();
+  if (!j.ok) { const e = new Error(j.error); e.data = j; throw e; }
+  return j;
+}
+const ERR = {
+  AUTH: 'الاسم أو الرقم السري غلط', reason: 'لازم تكتب السبب', role: 'مفيش صلاحية لك',
+  weight: 'الوزن غير صحيح', supplier: 'اختار المورد', notfound: 'الجامبو غير موجود'
+};
+const errText = e => ERR[e.message] || e.message;
+
+function show(v) {
+  document.querySelectorAll('.sec').forEach(e => e.classList.remove('on'));
+  $('#v-' + v).classList.add('on');
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  if (v === 'list' || v === 'exc') loadList();
+}
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.v));
+
+function seg(id, cb) {
+  document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); if (cb) cb(b.dataset.v);
+  });
+}
+const val = id => document.querySelector('#' + id + ' button.on').dataset.v;
+seg('g-press'); seg('g-type');
+seg('g-res', v => { $('#client').style.display = v === 'Client' ? 'block' : 'none'; });
+
+// login
+$('#l-name').value = U; $('#l-api').value = API;
+$('#l-go').onclick = async () => {
+  const m = $('#l-msg'); m.className = 'msg';
+  API = $('#l-api').value.trim(); U = $('#l-name').value.trim(); P = $('#l-pin').value.trim();
+  try {
+    const j = await api('settings');
+    LS.set('og_api', API); LS.set('og_user', U); LS.set('og_pin', P);
+    start(j);
+  } catch (e) { m.textContent = errText(e); m.className = 'msg err'; }
+};
+$('#logout').onclick = () => { LS.del('og_pin'); P = ''; ME = null; $('#tabs').style.display = 'none'; $('#logout').style.display = 'none'; $('#who').textContent = ''; $('#l-pin').value = ''; show('login'); };
+
+function start(j) {
+  CFG = j; ME = { name: j.name, role: j.role };
+  $('#who').textContent = j.name + (j.role === 'admin' ? ' (مدير)' : j.role === 'supervisor' ? ' (مشرف)' : '');
+  $('#logout').style.display = 'inline';
+  $('#tabs').style.display = 'flex';
+  $('#t-exc').style.display = (j.role === 'admin' || j.role === 'supervisor') ? 'block' : 'none';
+  $('#supplier').innerHTML = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
+  $('#reason').innerHTML = j.reasons.map(r => `<option>${esc(r)}</option>`).join('');
+  show('reg');
+}
+
+// weight live warning
+$('#weight').oninput = () => {
+  const w = Number($('#weight').value);
+  const out = CFG && w > 0 && (w < CFG.minW || w > CFG.maxW);
+  $('#reasonBox').style.display = out ? 'block' : 'none';
+  if (out) $('#wWarn').textContent = `الوزن خارج المعتاد (${CFG.minW}–${CFG.maxW} كجم). اكتب السبب:`;
+};
+
+// save
+async function doSave(confirmDup) {
+  const m = $('#r-msg'); m.className = 'msg';
+  const w = Number($('#weight').value), sup = $('#supplier').value;
+  const res = val('g-res') === 'Client' ? $('#client').value.trim().toUpperCase() : 'Stock';
+  if (!(w > 0)) { m.textContent = 'اكتب الوزن'; m.className = 'msg err'; return; }
+  if (!sup) { m.textContent = 'اختار المورد'; m.className = 'msg err'; return; }
+  if (!res) { m.textContent = 'اكتب كود العميل'; m.className = 'msg err'; return; }
+  const out = w < CFG.minW || w > CFG.maxW;
+  const b = $('#save'); b.disabled = true;
+  try {
+    const j = await api('add_jumbo', {
+      press: val('g-press'), type: val('g-type'), supplier: sup, weight: w, reservation: res,
+      reason: out ? $('#reason').value : '', confirmDup: !!confirmDup
+    });
+    $('#r-id').textContent = j.id;
+    $('#r-st').textContent = ST_AR[j.status] || j.status;
+    $('#result').style.display = 'block';
+    $('#weight').value = ''; $('#reasonBox').style.display = 'none'; $('#weight').focus();
+  } catch (e) {
+    if (e.message === 'dup') {
+      if (confirm(`في جامبو بنفس المكبس والمورد والوزن اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return doSave(true); }
+    } else { m.textContent = errText(e); m.className = 'msg err'; }
+  }
+  b.disabled = false;
+}
+$('#save').onclick = () => doSave(false);
+
+// list
+async function loadList() {
+  try { ROWS = (await api('list', { limit: 200 })).rows; } catch (e) { return; }
+  const today = new Date().toLocaleDateString('sv-SE');
+  const live = r => r.Void !== 'yes';
+  const td = ROWS.filter(r => r.Date === today);
+  const tot = a => a.filter(live).reduce((s, r) => s + Number(r.Weight_kg || 0), 0);
+  const canEdit = ME && (ME.role === 'admin' || ME.role === 'supervisor');
+  $('#sum').innerHTML = `<div class="sum"><span>جامبوهات اليوم: ${td.filter(live).length}</span><span dir="ltr">${fmt(tot(td))} kg</span></div>`;
+  $('#rows').innerHTML = ROWS.slice(0, 80).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b>
+        <small>${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)}</small>
+        ${r.Flag ? `<span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span>` : ''}
+      </div>
+      <div class="w">${fmt(r.Weight_kg)}</div>
+      ${canEdit && r.Void !== 'yes' ? `<div><button class="sm" onclick="amend('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidJ('${esc(r.ID)}')">إلغاء</button></div>` : ''}
+    </div>`).join('') || '<div style="color:#6b7785">مفيش بيانات لسه</div>';
+  if (canEdit) renderExc();
+}
+
+async function amend(id) {
+  const w = prompt('الوزن الجديد (كجم) للجامبو ' + id); if (!w) return;
+  const r = prompt('سبب التعديل (إجباري)'); if (!r) return;
+  try { await api('amend', { id, weight: Number(w), reason: r }); loadList(); } catch (e) { alert(errText(e)); }
+}
+async function voidJ(id) {
+  const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
+  try { await api('void', { id, reason: r }); loadList(); } catch (e) { alert(errText(e)); }
+}
+
+function renderExc() {
+  const live = ROWS.filter(r => r.Void !== 'yes');
+  const sumBy = (arr, k) => { const o = {}; arr.forEach(r => { o[r[k]] = (o[r[k]] || 0) + Number(r.Weight_kg || 0); }); return o; };
+  const st = sumBy(live, 'Status');
+  $('#bal').innerHTML = Object.keys(st).map(k => `<div class="sum"><span>${esc(ST_AR[k] || k)}</span><span dir="ltr">${fmt(st[k])} kg</span></div>`).join('') || '—';
+  const sup = {};
+  live.forEach(r => { const o = sup[r.Supplier] = sup[r.Supplier] || { total: 0, n: 0 }; o.total += Number(r.Weight_kg || 0); o.n++; });
+  $('#bySup').innerHTML = Object.keys(sup).map(k => `<div class="sum"><span>${esc(k)} (${sup[k].n})</span><span dir="ltr">${fmt(sup[k].total)} kg</span></div>`).join('') || '—';
+  const ex = ROWS.filter(r => r.Flag);
+  $('#excRows').innerHTML = ex.slice(0, 60).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(r.ID)}</b> <span dir="ltr">${fmt(r.Weight_kg)} kg</span>
+      <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Shift)}</small>
+      <span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span></div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
+}
+
+// auto-login if saved
+if (API && U && P) api('settings').then(start).catch(() => {});
+</script>
+</body>
+</html>
