@@ -13,7 +13,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,Segoe UI,Roboto,Ari
 .top span{font-size:13px;color:#b9c7d8}
 .top button{background:none;border:0;color:#b9c7d8;font-size:14px;margin-inline-start:10px}
 .tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea}
-.tabs button{flex:1;padding:13px 4px;border:0;background:none;font-size:15px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
+.tabs button{flex:1;padding:13px 2px;border:0;background:none;font-size:14px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
 .tabs button.on{color:var(--navy);border-color:var(--gold)}
 .wrap{max-width:520px;margin:0 auto;padding:14px}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,42,74,.07)}
@@ -30,6 +30,8 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .msg{padding:10px;border-radius:8px;margin-top:10px;font-size:14px;display:none}
 .msg.err{display:block;background:#fdecea;color:var(--err)}
 .msg.warn{display:block;background:#fff4d6;color:var(--warn)}
+.msg.ok{display:block;background:#e6f5ec;color:var(--ok)}
+.info{background:#f5f8fb;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--navy);line-height:1.7}
 .res{text-align:center;display:none}
 .res .id{font-size:26px;font-weight:800;color:var(--navy);direction:ltr}
 .res .st{display:inline-block;background:#e6f5ec;color:var(--ok);padding:4px 12px;border-radius:14px;font-weight:700;font-size:13px;margin:6px 0}
@@ -38,18 +40,27 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .row .m{flex:1}
 .row .m b{direction:ltr;display:inline-block}
 .row small{color:var(--mute);display:block}
-.row .w{font-weight:800;direction:ltr}
+.row .w{font-weight:800;direction:ltr;text-align:left}
+.row .w small{font-weight:400}
 .row.void{opacity:.45;text-decoration:line-through}
 .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff4d6;color:var(--warn);margin-top:3px}
 .sum{display:flex;justify-content:space-between;font-weight:700;padding:5px 0;color:var(--navy)}
+.bal{padding:12px 0;border-bottom:1px solid #eef1f4}
+.bal:last-child{border:0}
+.bal .n{font-weight:800;color:var(--navy);font-size:16px}
+.bal .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;font-size:12px;color:var(--mute);text-align:center}
+.bal .g div b{display:block;font-size:15px;color:#16202b;direction:ltr}
+.bal .g div.low b{color:var(--err)}
 h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
 .sec{display:none}.sec.on{display:block}
+.sub{display:none}.sub.on{display:block}
 </style>
 </head>
 <body>
 <div class="top"><b>OG · WAREHOUSE</b><div><span id="who"></span><button id="logout" style="display:none">خروج</button></div></div>
 <div class="tabs" id="tabs" style="display:none">
-  <button data-v="reg" class="on">تسجيل</button>
+  <button data-v="reg" class="on">المكبس</button>
+  <button data-v="raw">الخام</button>
   <button data-v="list">اليوم</button>
   <button data-v="exc" id="t-exc" style="display:none">استثناءات</button>
 </div>
@@ -69,7 +80,7 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   <div class="msg" id="l-msg"></div>
 </div></div>
 
-<!-- register -->
+<!-- press register -->
 <div class="sec" id="v-reg">
   <div class="card">
     <label class="t">المكبس</label>
@@ -101,14 +112,66 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   </div>
 </div>
 
+<!-- raw -->
+<div class="sec" id="v-raw">
+  <div class="card" style="padding:10px">
+    <div class="seg" id="g-raw">
+      <button data-v="issue" class="on">صرف للإنتاج</button>
+      <button data-v="recv" id="b-recv">دخول خام</button>
+      <button data-v="bal">الأرصدة</button>
+    </div>
+  </div>
+
+  <div class="sub on" id="s-issue">
+    <div class="card">
+      <label class="t">مورد الخام</label>
+      <select id="i-sup"><option value="">— اختر —</option></select>
+      <label class="t">المكبس</label>
+      <div class="seg" id="g-ipress"><button data-v="Indian" class="on">هندي</button><button data-v="Turkish">تركي</button></div>
+      <label class="t">عدد الجامبوهات المصروفة</label>
+      <input type="number" id="i-n" class="big" inputmode="numeric" placeholder="0">
+      <div class="info" id="i-info">اختار المورد</div>
+      <div id="i-reasonBox" style="display:none">
+        <div class="msg warn" style="display:block">العدد أكبر من الرصيد المسجل. اكتب السبب:</div>
+        <select id="i-reason" style="margin-top:8px"></select>
+      </div>
+      <button class="go" id="i-save">تسجيل الصرف</button>
+      <div class="msg" id="i-msg"></div>
+    </div>
+    <div class="card"><h3>آخر عمليات الصرف</h3><div id="i-rows"></div></div>
+  </div>
+
+  <div class="sub" id="s-recv">
+    <div class="card">
+      <label class="t">مورد الخام</label>
+      <select id="c-sup"><option value="">— اختر —</option></select>
+      <label class="t">عدد الجامبوهات</label>
+      <input type="number" id="c-n" class="big" inputmode="numeric" placeholder="0">
+      <label class="t">الوزن الصافي من الميزان (كجم)</label>
+      <input type="number" id="c-kg" class="big" inputmode="decimal" placeholder="0">
+      <div class="info" id="c-info">متوسط الجامبو هيظهر هنا</div>
+      <label class="t">رقم الإذن / السيارة (اختياري)</label>
+      <input type="text" id="c-ref" dir="ltr">
+      <button class="go" id="c-save">تسجيل الدخول</button>
+      <div class="msg" id="c-msg"></div>
+    </div>
+    <div class="card"><h3>آخر التوريدات</h3><div id="c-rows"></div></div>
+  </div>
+
+  <div class="sub" id="s-bal">
+    <div class="card"><h3>رصيد الخام لكل مورد</h3><div id="b-rows"></div></div>
+  </div>
+</div>
+
 <!-- list -->
 <div class="sec" id="v-list"><div class="card"><div id="sum"></div><div id="rows"></div></div></div>
 
 <!-- exceptions -->
 <div class="sec" id="v-exc">
-  <div class="card"><h3>الأرصدة (بدون الملغي)</h3><div id="bal"></div></div>
+  <div class="card"><h3>أرصدة الأقراص (بدون الملغي)</h3><div id="bal"></div></div>
   <div class="card"><h3>حسب المورد</h3><div id="bySup"></div></div>
-  <div class="card"><h3>الاستثناءات</h3><div id="excRows"></div></div>
+  <div class="card"><h3>استثناءات المكبس</h3><div id="excRows"></div></div>
+  <div class="card"><h3>استثناءات الخام</h3><div id="excRaw"></div></div>
 </div>
 
 </div>
@@ -127,7 +190,8 @@ const ST_AR = {'Ready for packing':'جاهز للتعبئة','Needs sieving':'ي
 const fmt = n => Number(n || 0).toLocaleString('en');
 
 let API = LS.get('og_api') || '', U = LS.get('og_user') || '', P = LS.get('og_pin') || '';
-let ME = null, CFG = null, ROWS = [];
+let ME = null, CFG = null, ROWS = [], RAW = null;
+const isSup = () => ME && (ME.role === 'admin' || ME.role === 'supervisor');
 
 async function api(action, data) {
   if (!API) throw new Error('حط رابط السيستم في "إعدادات الربط"');
@@ -138,15 +202,18 @@ async function api(action, data) {
 }
 const ERR = {
   AUTH: 'الاسم أو الرقم السري غلط', reason: 'لازم تكتب السبب', role: 'مفيش صلاحية لك',
-  weight: 'الوزن غير صحيح', supplier: 'اختار المورد', notfound: 'الجامبو غير موجود'
+  weight: 'الوزن غير صحيح', supplier: 'اختار المورد', notfound: 'السجل غير موجود',
+  jumbos: 'العدد لازم يكون رقم صحيح أكبر من صفر', norecv: 'مفيش دخول خام مسجل لهذا المورد'
 };
 const errText = e => ERR[e.message] || e.message;
+const setMsg = (id, text, cls) => { const m = $(id); m.textContent = text; m.className = 'msg ' + cls; };
 
 function show(v) {
   document.querySelectorAll('.sec').forEach(e => e.classList.remove('on'));
   $('#v-' + v).classList.add('on');
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   if (v === 'list' || v === 'exc') loadList();
+  if (v === 'raw') loadRaw();
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.v));
 
@@ -157,49 +224,58 @@ function seg(id, cb) {
   });
 }
 const val = id => document.querySelector('#' + id + ' button.on').dataset.v;
-seg('g-press'); seg('g-type');
+seg('g-press'); seg('g-type'); seg('g-ipress');
 seg('g-res', v => { $('#client').style.display = v === 'Client' ? 'block' : 'none'; });
+seg('g-raw', v => {
+  document.querySelectorAll('.sub').forEach(e => e.classList.remove('on'));
+  $('#s-' + v).classList.add('on');
+});
 
-// login
+// ---------- login ----------
 $('#l-name').value = U; $('#l-api').value = API;
 $('#l-go').onclick = async () => {
-  const m = $('#l-msg'); m.className = 'msg';
+  $('#l-msg').className = 'msg';
   API = $('#l-api').value.trim(); U = $('#l-name').value.trim(); P = $('#l-pin').value.trim();
   try {
     const j = await api('settings');
     LS.set('og_api', API); LS.set('og_user', U); LS.set('og_pin', P);
     start(j);
-  } catch (e) { m.textContent = errText(e); m.className = 'msg err'; }
+  } catch (e) { setMsg('#l-msg', errText(e), 'err'); }
 };
-$('#logout').onclick = () => { LS.del('og_pin'); P = ''; ME = null; $('#tabs').style.display = 'none'; $('#logout').style.display = 'none'; $('#who').textContent = ''; $('#l-pin').value = ''; show('login'); };
+$('#logout').onclick = () => {
+  LS.del('og_pin'); P = ''; ME = null;
+  $('#tabs').style.display = 'none'; $('#logout').style.display = 'none';
+  $('#who').textContent = ''; $('#l-pin').value = ''; show('login');
+};
 
 function start(j) {
   CFG = j; ME = { name: j.name, role: j.role };
   $('#who').textContent = j.name + (j.role === 'admin' ? ' (مدير)' : j.role === 'supervisor' ? ' (مشرف)' : '');
   $('#logout').style.display = 'inline';
   $('#tabs').style.display = 'flex';
-  $('#t-exc').style.display = (j.role === 'admin' || j.role === 'supervisor') ? 'block' : 'none';
-  $('#supplier').innerHTML = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
+  $('#t-exc').style.display = isSup() ? 'block' : 'none';
+  $('#b-recv').style.display = isSup() ? 'block' : 'none';
+  const opts = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
+  ['#supplier', '#i-sup', '#c-sup'].forEach(id => $(id).innerHTML = opts);
   $('#reason').innerHTML = j.reasons.map(r => `<option>${esc(r)}</option>`).join('');
+  $('#i-reason').innerHTML = j.rawReasons.map(r => `<option>${esc(r)}</option>`).join('');
   show('reg');
 }
 
-// weight live warning
+// ---------- press ----------
 $('#weight').oninput = () => {
   const w = Number($('#weight').value);
   const out = CFG && w > 0 && (w < CFG.minW || w > CFG.maxW);
   $('#reasonBox').style.display = out ? 'block' : 'none';
   if (out) $('#wWarn').textContent = `الوزن خارج المعتاد (${CFG.minW}–${CFG.maxW} كجم). اكتب السبب:`;
 };
-
-// save
 async function doSave(confirmDup) {
-  const m = $('#r-msg'); m.className = 'msg';
+  $('#r-msg').className = 'msg';
   const w = Number($('#weight').value), sup = $('#supplier').value;
   const res = val('g-res') === 'Client' ? $('#client').value.trim().toUpperCase() : 'Stock';
-  if (!(w > 0)) { m.textContent = 'اكتب الوزن'; m.className = 'msg err'; return; }
-  if (!sup) { m.textContent = 'اختار المورد'; m.className = 'msg err'; return; }
-  if (!res) { m.textContent = 'اكتب كود العميل'; m.className = 'msg err'; return; }
+  if (!(w > 0)) return setMsg('#r-msg', 'اكتب الوزن', 'err');
+  if (!sup) return setMsg('#r-msg', 'اختار المورد', 'err');
+  if (!res) return setMsg('#r-msg', 'اكتب كود العميل', 'err');
   const out = w < CFG.minW || w > CFG.maxW;
   const b = $('#save'); b.disabled = true;
   try {
@@ -214,34 +290,148 @@ async function doSave(confirmDup) {
   } catch (e) {
     if (e.message === 'dup') {
       if (confirm(`في جامبو بنفس المكبس والمورد والوزن اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return doSave(true); }
-    } else { m.textContent = errText(e); m.className = 'msg err'; }
+    } else setMsg('#r-msg', errText(e), 'err');
   }
   b.disabled = false;
 }
 $('#save').onclick = () => doSave(false);
 
-// list
+// ---------- raw ----------
+async function loadRaw() {
+  try { RAW = await api('raw_list', { limit: 60 }); } catch (e) { return; }
+  RAW.bmap = {}; RAW.balances.forEach(b => RAW.bmap[b.supplier] = b);
+  renderRaw();
+}
+function issueInfo() {
+  const sup = $('#i-sup').value, n = Number($('#i-n').value);
+  const b = RAW && RAW.bmap[sup];
+  let over = false;
+  if (!sup) $('#i-info').textContent = 'اختار المورد';
+  else if (!b || b.recJ <= 0) $('#i-info').textContent = 'مفيش دخول خام مسجل لهذا المورد';
+  else {
+    let t = `الرصيد: ${fmt(b.balJ)} جامبو (${fmt(b.balKg)} كجم)<br>متوسط الجامبو: ${fmt(b.avg)} كجم`;
+    if (n > 0) { t += `<br>الوزن التقديري للصرف: <b>${fmt(Math.round(n * b.avg))} كجم</b>`; over = n > b.balJ; }
+    $('#i-info').innerHTML = t;
+  }
+  $('#i-reasonBox').style.display = over ? 'block' : 'none';
+  return over;
+}
+$('#i-sup').onchange = issueInfo; $('#i-n').oninput = issueInfo;
+$('#c-n').oninput = $('#c-kg').oninput = () => {
+  const n = Number($('#c-n').value), kg = Number($('#c-kg').value);
+  $('#c-info').innerHTML = n > 0 && kg > 0
+    ? `متوسط الجامبو: <b>${(kg / n).toFixed(1)} كجم</b> (${(kg / 1000).toFixed(2)} طن)` : 'متوسط الجامبو هيظهر هنا';
+};
+
+async function saveIssue(confirmDup) {
+  $('#i-msg').className = 'msg';
+  const sup = $('#i-sup').value, n = Number($('#i-n').value);
+  if (!sup) return setMsg('#i-msg', 'اختار المورد', 'err');
+  if (!(n > 0) || Math.floor(n) !== n) return setMsg('#i-msg', 'اكتب عدد صحيح', 'err');
+  const over = issueInfo();
+  const b = $('#i-save'); b.disabled = true;
+  try {
+    const j = await api('add_issue', {
+      supplier: sup, press: val('g-ipress'), jumbos: n, reason: over ? $('#i-reason').value : '', confirmDup: !!confirmDup
+    });
+    setMsg('#i-msg', `اتسجل ${j.id} · الوزن التقديري ${fmt(j.est)} كجم · المتبقي ${fmt(j.balJ)} جامبو`, 'ok');
+    $('#i-n').value = '';
+    await loadRaw();
+  } catch (e) {
+    if (e.message === 'dup') {
+      if (confirm(`في صرف بنفس المورد والمكبس والعدد اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveIssue(true); }
+    } else setMsg('#i-msg', errText(e), 'err');
+  }
+  b.disabled = false;
+}
+$('#i-save').onclick = () => saveIssue(false);
+
+async function saveRecv(confirmDup) {
+  $('#c-msg').className = 'msg';
+  const sup = $('#c-sup').value, n = Number($('#c-n').value), kg = Number($('#c-kg').value);
+  if (!sup) return setMsg('#c-msg', 'اختار المورد', 'err');
+  if (!(n > 0) || Math.floor(n) !== n) return setMsg('#c-msg', 'اكتب عدد الجامبوهات (رقم صحيح)', 'err');
+  if (!(kg > 0)) return setMsg('#c-msg', 'اكتب الوزن الصافي', 'err');
+  const b = $('#c-save'); b.disabled = true;
+  try {
+    const j = await api('add_receipt', { supplier: sup, jumbos: n, net_kg: kg, ref: $('#c-ref').value.trim(), confirmDup: !!confirmDup });
+    setMsg('#c-msg', `اتسجل ${j.id} · متوسط الجامبو ${fmt(j.avg)} كجم` + (j.flags.length ? ' · ⚠ ' + j.flags.join('; ') : ''), j.flags.length ? 'warn' : 'ok');
+    $('#c-n').value = ''; $('#c-kg').value = ''; $('#c-ref').value = ''; $('#c-info').textContent = 'متوسط الجامبو هيظهر هنا';
+    await loadRaw();
+  } catch (e) {
+    if (e.message === 'dup') {
+      if (confirm(`في توريدة لنفس المورد بنفس الوزن اتسجلت خلال 24 ساعة (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveRecv(true); }
+    } else setMsg('#c-msg', errText(e), 'err');
+  }
+  b.disabled = false;
+}
+$('#c-save').onclick = () => saveRecv(false);
+
+const flagPill = r => r.Flag ? `<span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span>` : '';
+
+function renderRaw() {
+  issueInfo();
+  $('#i-rows').innerHTML = RAW.issues.slice(0, 30).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b>
+        <small>${esc(r.Supplier)} · ${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(r.Shift)}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
+      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Est_kg)} kg</small></div>
+      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amendRaw('issue','${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidRaw('issue','${esc(r.ID)}')">إلغاء</button></div>` : ''}
+    </div>`).join('') || '<div style="color:#6b7785">لسه مفيش صرف</div>';
+  $('#c-rows').innerHTML = RAW.receipts.slice(0, 30).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b>
+        <small>${esc(r.Supplier)} · متوسط ${fmt(r.Avg_kg)} كجم${r.Ref ? ' · ' + esc(r.Ref) : ''}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
+      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Net_kg)} kg</small></div>
+      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amendRaw('receipt','${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidRaw('receipt','${esc(r.ID)}')">إلغاء</button></div>` : ''}
+    </div>`).join('') || '<div style="color:#6b7785">لسه مفيش توريدات</div>';
+  $('#b-rows').innerHTML = RAW.balances.map(b => `
+    <div class="bal"><div class="n">${esc(b.supplier)} <small style="color:#6b7785;font-weight:400">متوسط ${fmt(b.avg)} كجم</small></div>
+      <div class="g">
+        <div>دخل<b>${fmt(b.recJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.recKg)} kg</b></div>
+        <div>صُرف<b>${fmt(b.issJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.issKg)} kg</b></div>
+        <div class="${b.balJ < 0 ? 'low' : ''}">الرصيد<b>${fmt(b.balJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.balKg)} kg</b></div>
+      </div></div>`).join('') || '<div style="color:#6b7785">مفيش موردين</div>';
+}
+
+async function amendRaw(kind, id) {
+  let data = { kind, id };
+  if (kind === 'issue') {
+    const n = prompt('العدد الجديد للجامبوهات في ' + id); if (!n) return; data.jumbos = Number(n);
+  } else {
+    const n = prompt('عدد الجامبوهات الجديد (سيب فاضي لو مش هتغيّره)', ''); if (n) data.jumbos = Number(n);
+    const k = prompt('الوزن الصافي الجديد بالكجم (سيب فاضي لو مش هتغيّره)', ''); if (k) data.net_kg = Number(k);
+    if (!n && !k) return;
+  }
+  const r = prompt('سبب التعديل (إجباري)'); if (!r) return; data.reason = r;
+  try { await api('amend', data); loadRaw(); } catch (e) { alert(errText(e)); }
+}
+async function voidRaw(kind, id) {
+  const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
+  try { await api('void', { kind, id, reason: r }); loadRaw(); } catch (e) { alert(errText(e)); }
+}
+
+// ---------- press list / exceptions ----------
 async function loadList() {
   try { ROWS = (await api('list', { limit: 200 })).rows; } catch (e) { return; }
   const today = new Date().toLocaleDateString('sv-SE');
   const live = r => r.Void !== 'yes';
   const td = ROWS.filter(r => r.Date === today);
   const tot = a => a.filter(live).reduce((s, r) => s + Number(r.Weight_kg || 0), 0);
-  const canEdit = ME && (ME.role === 'admin' || ME.role === 'supervisor');
   $('#sum').innerHTML = `<div class="sum"><span>جامبوهات اليوم: ${td.filter(live).length}</span><span dir="ltr">${fmt(tot(td))} kg</span></div>`;
   $('#rows').innerHTML = ROWS.slice(0, 80).map(r => `
     <div class="row ${r.Void === 'yes' ? 'void' : ''}">
       <div class="m"><b>${esc(r.ID)}</b>
         <small>${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
-        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)}</small>
-        ${r.Flag ? `<span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span>` : ''}
+        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)}</small>${flagPill(r)}
       </div>
       <div class="w">${fmt(r.Weight_kg)}</div>
-      ${canEdit && r.Void !== 'yes' ? `<div><button class="sm" onclick="amend('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidJ('${esc(r.ID)}')">إلغاء</button></div>` : ''}
+      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amend('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidJ('${esc(r.ID)}')">إلغاء</button></div>` : ''}
     </div>`).join('') || '<div style="color:#6b7785">مفيش بيانات لسه</div>';
-  if (canEdit) renderExc();
+  if (isSup()) renderExc();
 }
-
 async function amend(id) {
   const w = prompt('الوزن الجديد (كجم) للجامبو ' + id); if (!w) return;
   const r = prompt('سبب التعديل (إجباري)'); if (!r) return;
@@ -251,8 +441,7 @@ async function voidJ(id) {
   const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
   try { await api('void', { id, reason: r }); loadList(); } catch (e) { alert(errText(e)); }
 }
-
-function renderExc() {
+async function renderExc() {
   const live = ROWS.filter(r => r.Void !== 'yes');
   const sumBy = (arr, k) => { const o = {}; arr.forEach(r => { o[r[k]] = (o[r[k]] || 0) + Number(r.Weight_kg || 0); }); return o; };
   const st = sumBy(live, 'Status');
@@ -263,8 +452,14 @@ function renderExc() {
   const ex = ROWS.filter(r => r.Flag);
   $('#excRows').innerHTML = ex.slice(0, 60).map(r => `
     <div class="row ${r.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(r.ID)}</b> <span dir="ltr">${fmt(r.Weight_kg)} kg</span>
-      <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Shift)}</small>
-      <span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span></div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
+      <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Shift)}</small>${flagPill(r)}</div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
+  try {
+    const rw = await api('raw_list', { limit: 100 });
+    const items = rw.issues.concat(rw.receipts).filter(r => r.Flag).sort((a, b) => b.Timestamp.localeCompare(a.Timestamp));
+    $('#excRaw').innerHTML = items.slice(0, 60).map(r => `
+      <div class="row ${r.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(r.ID)}</b> ${esc(r.Supplier)} · ${fmt(r.Jumbos)} جامبو
+        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
+  } catch (e) {}
 }
 
 // auto-login if saved
