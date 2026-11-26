@@ -13,7 +13,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,Segoe UI,Roboto,Ari
 .top span{font-size:13px;color:#b9c7d8}
 .top button{background:none;border:0;color:#b9c7d8;font-size:14px;margin-inline-start:10px}
 .tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea}
-.tabs button{flex:1;padding:13px 2px;border:0;background:none;font-size:14px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
+.tabs button{flex:1;padding:13px 2px;border:0;background:none;font-size:13px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
 .tabs button.on{color:var(--navy);border-color:var(--gold)}
 .wrap{max-width:520px;margin:0 auto;padding:14px}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,42,74,.07)}
@@ -22,8 +22,9 @@ label.t:first-child{margin-top:0}
 input[type=text],input[type=number],input[type=password],select{width:100%;padding:13px;border:1px solid #cdd6df;border-radius:10px;font-size:18px;background:#fff}
 input.big{font-size:30px;font-weight:700;text-align:center}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
-.seg button{flex:1;min-width:30%;padding:14px 6px;border:2px solid #cdd6df;background:#fff;border-radius:10px;font-size:15px;font-weight:600}
+.seg button{flex:1;min-width:30%;padding:13px 6px;border:2px solid #cdd6df;background:#fff;border-radius:10px;font-size:15px;font-weight:600}
 .seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.seg.two button{min-width:45%}
 .go{width:100%;padding:16px;border:0;border-radius:12px;background:var(--gold);color:#222;font-size:18px;font-weight:800;margin-top:16px}
 .go:disabled{opacity:.5}
 .sm{padding:6px 10px;border:1px solid #cdd6df;background:#fff;border-radius:8px;font-size:12px;margin-inline-start:6px}
@@ -32,6 +33,9 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .msg.warn{display:block;background:#fff4d6;color:var(--warn)}
 .msg.ok{display:block;background:#e6f5ec;color:var(--ok)}
 .info{background:#f5f8fb;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--navy);line-height:1.7}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.three label{font-size:12px;color:var(--mute);text-align:center;display:block;margin-bottom:4px}
+.three input{font-size:22px;text-align:center;font-weight:700;padding:10px 4px}
 .res{text-align:center;display:none}
 .res .id{font-size:26px;font-weight:800;color:var(--navy);direction:ltr}
 .res .st{display:inline-block;background:#e6f5ec;color:var(--ok);padding:4px 12px;border-radius:14px;font-weight:700;font-size:13px;margin:6px 0}
@@ -43,6 +47,7 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .row .w{font-weight:800;direction:ltr;text-align:left}
 .row .w small{font-weight:400}
 .row.void{opacity:.45;text-decoration:line-through}
+.row input[type=checkbox]{width:22px;height:22px}
 .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff4d6;color:var(--warn);margin-top:3px}
 .sum{display:flex;justify-content:space-between;font-weight:700;padding:5px 0;color:var(--navy)}
 .bal{padding:12px 0;border-bottom:1px solid #eef1f4}
@@ -50,10 +55,14 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .bal .n{font-weight:800;color:var(--navy);font-size:16px}
 .bal .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;font-size:12px;color:var(--mute);text-align:center}
 .bal .g div b{display:block;font-size:15px;color:#16202b;direction:ltr}
-.bal .g div.low b{color:var(--err)}
+.bal .g div b.s{font-size:12px;color:var(--mute);font-weight:400}
+.bal .g div.low b:first-of-type{color:var(--err)}
+.bal .g div.good b:first-of-type{color:var(--ok)}
 h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
 .sec{display:none}.sec.on{display:block}
 .sub{display:none}.sub.on{display:block}
+.srow{display:flex;gap:8px;margin-top:8px}
+.srow input{flex:1;font-size:20px;text-align:center}
 </style>
 </head>
 <body>
@@ -61,8 +70,9 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
 <div class="tabs" id="tabs" style="display:none">
   <button data-v="reg" class="on">المكبس</button>
   <button data-v="raw">الخام</button>
+  <button data-v="sieve">الغربال</button>
   <button data-v="list">اليوم</button>
-  <button data-v="exc" id="t-exc" style="display:none">استثناءات</button>
+  <button data-v="exc" id="t-exc" style="display:none">تقارير</button>
 </div>
 <div class="wrap">
 
@@ -85,6 +95,8 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   <div class="card">
     <label class="t">المكبس</label>
     <div class="seg" id="g-press"><button data-v="Indian" class="on">هندي</button><button data-v="Turkish">تركي</button></div>
+    <label class="t">نوع الملح</label>
+    <div class="seg" id="g-salt"><button data-v="Coarse">خشن</button><button data-v="Fine" class="on">ناعم</button><button data-v="Sugar">سكري</button></div>
     <label class="t">نوع الجامبو</label>
     <div class="seg" id="g-type">
       <button data-v="Sound" class="on">أقراص سليمة</button>
@@ -116,9 +128,10 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
 <div class="sec" id="v-raw">
   <div class="card" style="padding:10px">
     <div class="seg" id="g-raw">
-      <button data-v="issue" class="on">صرف للإنتاج</button>
-      <button data-v="recv" id="b-recv">دخول خام</button>
+      <button data-v="issue" class="on">صرف</button>
+      <button data-v="recv" id="b-recv">دخول</button>
       <button data-v="bal">الأرصدة</button>
+      <button data-v="emp">فاضي</button>
     </div>
   </div>
 
@@ -126,13 +139,15 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
     <div class="card">
       <label class="t">مورد الخام</label>
       <select id="i-sup"><option value="">— اختر —</option></select>
+      <label class="t">نوع الملح</label>
+      <div class="seg" id="g-isalt"><button data-v="Coarse">خشن</button><button data-v="Fine" class="on">ناعم</button><button data-v="Sugar">سكري</button></div>
       <label class="t">المكبس</label>
       <div class="seg" id="g-ipress"><button data-v="Indian" class="on">هندي</button><button data-v="Turkish">تركي</button></div>
       <label class="t">عدد الجامبوهات المصروفة</label>
       <input type="number" id="i-n" class="big" inputmode="numeric" placeholder="0">
       <div class="info" id="i-info">اختار المورد</div>
       <div id="i-reasonBox" style="display:none">
-        <div class="msg warn" style="display:block">العدد أكبر من الرصيد المسجل. اكتب السبب:</div>
+        <div class="msg warn" style="display:block" id="i-rtext"></div>
         <select id="i-reason" style="margin-top:8px"></select>
       </div>
       <button class="go" id="i-save">تسجيل الصرف</button>
@@ -145,8 +160,12 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
     <div class="card">
       <label class="t">مورد الخام</label>
       <select id="c-sup"><option value="">— اختر —</option></select>
-      <label class="t">عدد الجامبوهات</label>
-      <input type="number" id="c-n" class="big" inputmode="numeric" placeholder="0">
+      <label class="t">عدد الجامبوهات حسب النوع</label>
+      <div class="three">
+        <div><label>خشن</label><input type="number" id="c-coarse" inputmode="numeric" placeholder="0"></div>
+        <div><label>ناعم</label><input type="number" id="c-fine" inputmode="numeric" placeholder="0"></div>
+        <div><label>سكري</label><input type="number" id="c-sugar" inputmode="numeric" placeholder="0"></div>
+      </div>
       <label class="t">الوزن الصافي من الميزان (كجم)</label>
       <input type="number" id="c-kg" class="big" inputmode="decimal" placeholder="0">
       <div class="info" id="c-info">متوسط الجامبو هيظهر هنا</div>
@@ -159,19 +178,74 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   </div>
 
   <div class="sub" id="s-bal">
-    <div class="card"><h3>رصيد الخام لكل مورد</h3><div id="b-rows"></div></div>
+    <div class="card"><h3>رصيد الخام (مورد × نوع)</h3><div id="b-rows"></div></div>
   </div>
+
+  <div class="sub" id="s-emp">
+    <div class="card"><h3>جامبوهات الموردين الفاضية عندنا</h3><div id="e-rows"></div></div>
+    <div class="card" id="e-form">
+      <h3>تسجيل حركة</h3>
+      <label class="t">المورد</label>
+      <select id="e-sup"><option value="">— اختر —</option></select>
+      <label class="t">النوع</label>
+      <div class="seg" id="g-ekind">
+        <button data-v="Return" class="on">رجّعنا للمورد</button>
+        <button data-v="Write-off">تالف / مفقود</button>
+        <button data-v="Opening" id="b-open">رصيد افتتاحي</button>
+      </div>
+      <label class="t">عدد الجامبوهات</label>
+      <input type="number" id="e-n" class="big" inputmode="numeric" placeholder="0">
+      <label class="t">ملاحظة / سبب (إجباري للتالف والافتتاحي)</label>
+      <input type="text" id="e-reason">
+      <button class="go" id="e-save">تسجيل</button>
+      <div class="msg" id="e-msg"></div>
+    </div>
+    <div class="card"><h3>آخر الحركات</h3><div id="e-list"></div></div>
+  </div>
+</div>
+
+<!-- sieve -->
+<div class="sec" id="v-sieve">
+  <div class="card">
+    <h3>1) اختار الجامبوهات الداخلة للغربال</h3>
+    <div style="font-size:12px;color:var(--mute);margin-bottom:6px">من مورد واحد في كل تشغيلة.</div>
+    <div id="sv-pending"></div>
+    <div class="info" id="sv-insum">لسه ما اخترتش حاجة</div>
+  </div>
+  <div class="card">
+    <h3>2) الناتج بعد الغربلة</h3>
+    <label class="t">أقراص سليمة (كل جامبو بوزنه)</label>
+    <div id="sv-sound"></div>
+    <button class="sm" id="sv-add" style="margin:8px 0 0">+ جامبو سليم</button>
+    <label class="t">كسر (كجم)</label>
+    <input type="number" id="sv-shards" inputmode="decimal" placeholder="0">
+    <label class="t">باودر (كجم)</label>
+    <input type="number" id="sv-powder" inputmode="decimal" placeholder="0">
+    <div class="info" id="sv-calc">—</div>
+    <div id="sv-reasonBox" style="display:none">
+      <div class="msg warn" style="display:block">الناتج أكبر من الداخل. اكتب السبب:</div>
+      <input type="text" id="sv-reason" style="margin-top:8px">
+    </div>
+    <button class="go" id="sv-save">تسجيل الغربلة</button>
+    <div class="msg" id="sv-msg"></div>
+  </div>
+  <div class="card"><h3>آخر التشغيلات</h3><div id="sv-runs"></div></div>
 </div>
 
 <!-- list -->
 <div class="sec" id="v-list"><div class="card"><div id="sum"></div><div id="rows"></div></div></div>
 
-<!-- exceptions -->
+<!-- reports -->
 <div class="sec" id="v-exc">
+  <div class="card">
+    <label class="t">الفترة</label>
+    <select id="rp-period"><option value="all">كل الفترة</option><option value="7">آخر 7 أيام</option><option value="month">هذا الشهر</option></select>
+  </div>
+  <div class="card"><h3>الهالك والإنتاجية (مورد × نوع ملح)</h3>
+    <div style="font-size:11px;color:var(--mute);margin-bottom:6px">تقريبي: الخام المصروف اللي لسه بيتكبس بيظهر كفاقد مكبس مؤقتًا.</div>
+    <div id="rp-waste"></div></div>
   <div class="card"><h3>أرصدة الأقراص (بدون الملغي)</h3><div id="bal"></div></div>
-  <div class="card"><h3>حسب المورد</h3><div id="bySup"></div></div>
-  <div class="card"><h3>استثناءات المكبس</h3><div id="excRows"></div></div>
-  <div class="card"><h3>استثناءات الخام</h3><div id="excRaw"></div></div>
+  <div class="card"><h3>الاستثناءات</h3><div id="excRows"></div></div>
 </div>
 
 </div>
@@ -185,12 +259,18 @@ const LS = {
 };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TYPE_AR = {'Sound':'أقراص سليمة','Mixed waste':'هالك مخلوط','Full output':'إنتاج كامل'};
-const PRESS_AR = {'Indian':'هندي','Turkish':'تركي'};
-const ST_AR = {'Ready for packing':'جاهز للتعبئة','Needs sieving':'يحتاج غربلة','Void':'ملغي'};
+const PRESS_AR = {'Indian':'هندي','Turkish':'تركي','Mixed':'مخلوط'};
+const SALT_AR = {'Coarse':'خشن','Fine':'ناعم','Sugar':'سكري','Mixed':'مخلوط','Unspecified':'غير محدد','':'—'};
+const ST_AR = {'Ready for packing':'جاهز للتعبئة','Needs sieving':'يحتاج غربلة','Sieved':'اتغربل','Void':'ملغي'};
+const KIND_AR = {'Return':'رجّعنا','Write-off':'تالف/مفقود','Opening':'افتتاحي'};
+const PRESS_OK = { Turkish: ['Coarse', 'Sugar'], Indian: ['Fine', 'Sugar'] };
+const mism = (press, salt) => PRESS_OK[press].indexOf(salt) < 0;
+const autoSalt = p => p === 'Indian' ? 'Fine' : 'Coarse';
 const fmt = n => Number(n || 0).toLocaleString('en');
 
 let API = LS.get('og_api') || '', U = LS.get('og_user') || '', P = LS.get('og_pin') || '';
-let ME = null, CFG = null, ROWS = [], RAW = null;
+let ME = null, CFG = null, ROWS = [], RAW = null, PEND = [], RUNS = [];
+const touched = {};
 const isSup = () => ME && (ME.role === 'admin' || ME.role === 'supervisor');
 
 async function api(action, data) {
@@ -203,29 +283,43 @@ async function api(action, data) {
 const ERR = {
   AUTH: 'الاسم أو الرقم السري غلط', reason: 'لازم تكتب السبب', role: 'مفيش صلاحية لك',
   weight: 'الوزن غير صحيح', supplier: 'اختار المورد', notfound: 'السجل غير موجود',
-  jumbos: 'العدد لازم يكون رقم صحيح أكبر من صفر', norecv: 'مفيش دخول خام مسجل لهذا المورد'
+  jumbos: 'العدد لازم يكون رقم صحيح أكبر من صفر', norecv: 'مفيش دخول خام مسجل لهذا المورد ولنوع الملح ده',
+  salt: 'اختار نوع الملح', ids: 'اختار جامبو واحد على الأقل', sound: 'وزن جامبو سليم غير صحيح',
+  outputs: 'سجل ناتج واحد على الأقل', mixed_supplier: 'الجامبوهات المختارة من أكتر من مورد. اغربل كل مورد لوحده',
+  not_pending: 'جامبو مش في قايمة الغربلة (اتغربل قبل كده أو اتلغى)', already_used: 'جامبوهات ناتجة من الغربلة اتستخدمت ومش ينفع الإلغاء',
+  noamend: 'التعديل مش متاح هنا. الغي وسجل من جديد', kind: 'نوع غير صحيح'
 };
 const errText = e => ERR[e.message] || e.message;
 const setMsg = (id, text, cls) => { const m = $(id); m.textContent = text; m.className = 'msg ' + cls; };
+const flagPill = r => r.Flag ? `<span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span>` : '';
+const empty = t => `<div style="color:#6b7785">${t}</div>`;
 
 function show(v) {
   document.querySelectorAll('.sec').forEach(e => e.classList.remove('on'));
   $('#v-' + v).classList.add('on');
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  if (v === 'list' || v === 'exc') loadList();
+  if (v === 'list') loadList();
+  if (v === 'exc') loadReports();
   if (v === 'raw') loadRaw();
+  if (v === 'sieve') loadSieve();
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.v));
 
+function pick(id, v) { document.querySelectorAll('#' + id + ' button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
 function seg(id, cb) {
   document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
-    document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.remove('on'));
-    b.classList.add('on'); if (cb) cb(b.dataset.v);
+    pick(id, b.dataset.v); if (cb) cb(b.dataset.v);
   });
 }
 const val = id => document.querySelector('#' + id + ' button.on').dataset.v;
-seg('g-press'); seg('g-type'); seg('g-ipress');
+
+seg('g-type');
+seg('g-press', v => { if (!touched.salt) pick('g-salt', autoSalt(v)); });
+seg('g-salt', () => { touched.salt = true; });
 seg('g-res', v => { $('#client').style.display = v === 'Client' ? 'block' : 'none'; });
+seg('g-ipress', v => { if (!touched.isalt) pick('g-isalt', autoSalt(v)); issueInfo(); });
+seg('g-isalt', () => { touched.isalt = true; issueInfo(); });
+seg('g-ekind');
 seg('g-raw', v => {
   document.querySelectorAll('.sub').forEach(e => e.classList.remove('on'));
   $('#s-' + v).classList.add('on');
@@ -255,8 +349,10 @@ function start(j) {
   $('#tabs').style.display = 'flex';
   $('#t-exc').style.display = isSup() ? 'block' : 'none';
   $('#b-recv').style.display = isSup() ? 'block' : 'none';
+  $('#e-form').style.display = isSup() ? 'block' : 'none';
+  $('#b-open').style.display = j.role === 'admin' ? 'block' : 'none';
   const opts = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
-  ['#supplier', '#i-sup', '#c-sup'].forEach(id => $(id).innerHTML = opts);
+  ['#supplier', '#i-sup', '#c-sup', '#e-sup'].forEach(id => $(id).innerHTML = opts);
   $('#reason').innerHTML = j.reasons.map(r => `<option>${esc(r)}</option>`).join('');
   $('#i-reason').innerHTML = j.rawReasons.map(r => `<option>${esc(r)}</option>`).join('');
   show('reg');
@@ -280,13 +376,14 @@ async function doSave(confirmDup) {
   const b = $('#save'); b.disabled = true;
   try {
     const j = await api('add_jumbo', {
-      press: val('g-press'), type: val('g-type'), supplier: sup, weight: w, reservation: res,
+      press: val('g-press'), salt: val('g-salt'), type: val('g-type'), supplier: sup, weight: w, reservation: res,
       reason: out ? $('#reason').value : '', confirmDup: !!confirmDup
     });
     $('#r-id').textContent = j.id;
     $('#r-st').textContent = ST_AR[j.status] || j.status;
     $('#result').style.display = 'block';
     $('#weight').value = ''; $('#reasonBox').style.display = 'none'; $('#weight').focus();
+    if (j.flags.some(f => f.indexOf('mismatch') >= 0)) setMsg('#r-msg', 'تنبيه: نوع الملح مش المعتاد للمكبس ده (اتسجل في الاستثناءات)', 'warn');
   } catch (e) {
     if (e.message === 'dup') {
       if (confirm(`في جامبو بنفس المكبس والمورد والوزن اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return doSave(true); }
@@ -299,47 +396,63 @@ $('#save').onclick = () => doSave(false);
 // ---------- raw ----------
 async function loadRaw() {
   try { RAW = await api('raw_list', { limit: 60 }); } catch (e) { return; }
-  RAW.bmap = {}; RAW.balances.forEach(b => RAW.bmap[b.supplier] = b);
+  RAW.bmap = {}; RAW.balances.forEach(b => RAW.bmap[b.supplier + '|' + b.salt] = b);
+  RAW.omap = {}; RAW.owed.forEach(o => RAW.omap[o.supplier] = o);
   renderRaw();
 }
 function issueInfo() {
-  const sup = $('#i-sup').value, n = Number($('#i-n').value);
-  const b = RAW && RAW.bmap[sup];
+  if (!CFG) return false;
+  const sup = $('#i-sup').value, salt = val('g-isalt'), press = val('g-ipress'), n = Number($('#i-n').value);
+  const b = RAW && RAW.bmap[sup + '|' + salt];
   let over = false;
+  const m = mism(press, salt);
   if (!sup) $('#i-info').textContent = 'اختار المورد';
-  else if (!b || b.recJ <= 0) $('#i-info').textContent = 'مفيش دخول خام مسجل لهذا المورد';
+  else if (!b || b.recJ <= 0) $('#i-info').textContent = `مفيش دخول ${SALT_AR[salt]} مسجل لهذا المورد`;
   else {
-    let t = `الرصيد: ${fmt(b.balJ)} جامبو (${fmt(b.balKg)} كجم)<br>متوسط الجامبو: ${fmt(b.avg)} كجم`;
+    let t = `رصيد ${SALT_AR[salt]}: ${fmt(b.balJ)} جامبو (${fmt(b.balKg)} كجم)<br>متوسط الجامبو: ${fmt(b.avg)} كجم`;
     if (n > 0) { t += `<br>الوزن التقديري للصرف: <b>${fmt(Math.round(n * b.avg))} كجم</b>`; over = n > b.balJ; }
     $('#i-info').innerHTML = t;
   }
-  $('#i-reasonBox').style.display = over ? 'block' : 'none';
-  return over;
+  const parts = [];
+  if (over) parts.push('العدد أكبر من الرصيد المسجل');
+  if (m) parts.push(`${SALT_AR[salt]} مش المعتاد للمكبس ${PRESS_AR[press]}`);
+  $('#i-reasonBox').style.display = parts.length ? 'block' : 'none';
+  $('#i-rtext').textContent = parts.join(' · ') + '. اكتب السبب:';
+  return parts.length > 0;
 }
 $('#i-sup').onchange = issueInfo; $('#i-n').oninput = issueInfo;
-$('#c-n').oninput = $('#c-kg').oninput = () => {
-  const n = Number($('#c-n').value), kg = Number($('#c-kg').value);
-  $('#c-info').innerHTML = n > 0 && kg > 0
-    ? `متوسط الجامبو: <b>${(kg / n).toFixed(1)} كجم</b> (${(kg / 1000).toFixed(2)} طن)` : 'متوسط الجامبو هيظهر هنا';
-};
+
+function recvInfo() {
+  const c = ['#c-coarse', '#c-fine', '#c-sugar'].map(id => Number($(id).value) || 0);
+  const n = c[0] + c[1] + c[2], kg = Number($('#c-kg').value);
+  const sup = $('#c-sup').value;
+  let t = n > 0 && kg > 0 ? `إجمالي ${n} جامبو · متوسط الجامبو: <b>${(kg / n).toFixed(1)} كجم</b> (${(kg / 1000).toFixed(2)} طن)`
+                          : (n > 0 ? `إجمالي ${n} جامبو` : 'متوسط الجامبو هيظهر هنا');
+  const o = RAW && RAW.omap[sup];
+  if (sup && o) t += `<br>🔁 لسه عليك <b>${fmt(o.owed)}</b> جامبو فاضي للمورد ده`;
+  $('#c-info').innerHTML = t;
+}
+['#c-coarse', '#c-fine', '#c-sugar', '#c-kg'].forEach(id => $(id).oninput = recvInfo);
+$('#c-sup').onchange = recvInfo;
 
 async function saveIssue(confirmDup) {
   $('#i-msg').className = 'msg';
   const sup = $('#i-sup').value, n = Number($('#i-n').value);
   if (!sup) return setMsg('#i-msg', 'اختار المورد', 'err');
   if (!(n > 0) || Math.floor(n) !== n) return setMsg('#i-msg', 'اكتب عدد صحيح', 'err');
-  const over = issueInfo();
+  const needReason = issueInfo();
   const b = $('#i-save'); b.disabled = true;
   try {
     const j = await api('add_issue', {
-      supplier: sup, press: val('g-ipress'), jumbos: n, reason: over ? $('#i-reason').value : '', confirmDup: !!confirmDup
+      supplier: sup, salt: val('g-isalt'), press: val('g-ipress'), jumbos: n,
+      reason: needReason ? $('#i-reason').value : '', confirmDup: !!confirmDup
     });
     setMsg('#i-msg', `اتسجل ${j.id} · الوزن التقديري ${fmt(j.est)} كجم · المتبقي ${fmt(j.balJ)} جامبو`, 'ok');
     $('#i-n').value = '';
     await loadRaw();
   } catch (e) {
     if (e.message === 'dup') {
-      if (confirm(`في صرف بنفس المورد والمكبس والعدد اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveIssue(true); }
+      if (confirm(`في صرف بنفس المورد والمكبس والنوع والعدد اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveIssue(true); }
     } else setMsg('#i-msg', errText(e), 'err');
   }
   b.disabled = false;
@@ -348,16 +461,17 @@ $('#i-save').onclick = () => saveIssue(false);
 
 async function saveRecv(confirmDup) {
   $('#c-msg').className = 'msg';
-  const sup = $('#c-sup').value, n = Number($('#c-n').value), kg = Number($('#c-kg').value);
+  const sup = $('#c-sup').value, kg = Number($('#c-kg').value);
+  const c = ['#c-coarse', '#c-fine', '#c-sugar'].map(id => Number($(id).value) || 0);
   if (!sup) return setMsg('#c-msg', 'اختار المورد', 'err');
-  if (!(n > 0) || Math.floor(n) !== n) return setMsg('#c-msg', 'اكتب عدد الجامبوهات (رقم صحيح)', 'err');
+  if (c.some(x => x < 0 || Math.floor(x) !== x) || c[0] + c[1] + c[2] <= 0) return setMsg('#c-msg', 'اكتب عدد الجامبوهات (أرقام صحيحة)', 'err');
   if (!(kg > 0)) return setMsg('#c-msg', 'اكتب الوزن الصافي', 'err');
   const b = $('#c-save'); b.disabled = true;
   try {
-    const j = await api('add_receipt', { supplier: sup, jumbos: n, net_kg: kg, ref: $('#c-ref').value.trim(), confirmDup: !!confirmDup });
-    setMsg('#c-msg', `اتسجل ${j.id} · متوسط الجامبو ${fmt(j.avg)} كجم` + (j.flags.length ? ' · ⚠ ' + j.flags.join('; ') : ''), j.flags.length ? 'warn' : 'ok');
-    $('#c-n').value = ''; $('#c-kg').value = ''; $('#c-ref').value = ''; $('#c-info').textContent = 'متوسط الجامبو هيظهر هنا';
-    await loadRaw();
+    const j = await api('add_receipt', { supplier: sup, coarse: c[0], fine: c[1], sugar: c[2], net_kg: kg, ref: $('#c-ref').value.trim(), confirmDup: !!confirmDup });
+    setMsg('#c-msg', `اتسجل ${j.id} · متوسط الجامبو ${fmt(j.avg)} كجم · لسه عليك ${fmt(j.owed)} جامبو فاضي للمورد` + (j.flags.length ? ' · ⚠ ' + j.flags.join('; ') : ''), j.flags.length ? 'warn' : 'ok');
+    ['#c-coarse', '#c-fine', '#c-sugar', '#c-kg', '#c-ref'].forEach(id => $(id).value = '');
+    await loadRaw(); recvInfo();
   } catch (e) {
     if (e.message === 'dup') {
       if (confirm(`في توريدة لنفس المورد بنفس الوزن اتسجلت خلال 24 ساعة (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveRecv(true); }
@@ -367,44 +481,75 @@ async function saveRecv(confirmDup) {
 }
 $('#c-save').onclick = () => saveRecv(false);
 
-const flagPill = r => r.Flag ? `<span class="pill">${esc(r.Flag)}${r.Reason ? ' — ' + esc(r.Reason) : ''}</span>` : '';
+async function saveEmp(confirmDup) {
+  $('#e-msg').className = 'msg';
+  const sup = $('#e-sup').value, n = Number($('#e-n').value);
+  if (!sup) return setMsg('#e-msg', 'اختار المورد', 'err');
+  if (!(n > 0) || Math.floor(n) !== n) return setMsg('#e-msg', 'اكتب عدد صحيح', 'err');
+  const b = $('#e-save'); b.disabled = true;
+  try {
+    const j = await api('add_return', { supplier: sup, kind: val('g-ekind'), jumbos: n, reason: $('#e-reason').value.trim(), confirmDup: !!confirmDup });
+    setMsg('#e-msg', `اتسجل ${j.id} · المتبقي للمورد ${fmt(j.owed)} جامبو` + (j.flags.length ? ' · ⚠ ' + j.flags.join('; ') : ''), j.flags.length ? 'warn' : 'ok');
+    $('#e-n').value = ''; $('#e-reason').value = '';
+    await loadRaw();
+  } catch (e) {
+    if (e.message === 'dup') {
+      if (confirm(`في حركة مشابهة اتسجلت من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return saveEmp(true); }
+    } else setMsg('#e-msg', errText(e), 'err');
+  }
+  b.disabled = false;
+}
+$('#e-save').onclick = () => saveEmp(false);
+
+const btns = (kind, r) => isSup() && r.Void !== 'yes'
+  ? `<div>${kind === 'issue' || kind === 'receipt' ? `<button class="sm" onclick="amendRaw('${kind}','${esc(r.ID)}')">تعديل</button>` : ''}<button class="sm" onclick="voidRaw('${kind}','${esc(r.ID)}')">إلغاء</button></div>` : '';
 
 function renderRaw() {
-  issueInfo();
+  issueInfo(); recvInfo();
   $('#i-rows').innerHTML = RAW.issues.slice(0, 30).map(r => `
     <div class="row ${r.Void === 'yes' ? 'void' : ''}">
       <div class="m"><b>${esc(r.ID)}</b>
-        <small>${esc(r.Supplier)} · ${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(r.Shift)}</small>
+        <small>${esc(r.Supplier)} · ${esc(SALT_AR[r.Salt] || r.Salt)} · ${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(r.Shift)}</small>
         <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
-      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Est_kg)} kg</small></div>
-      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amendRaw('issue','${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidRaw('issue','${esc(r.ID)}')">إلغاء</button></div>` : ''}
-    </div>`).join('') || '<div style="color:#6b7785">لسه مفيش صرف</div>';
+      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Est_kg)} kg</small></div>${btns('issue', r)}
+    </div>`).join('') || empty('لسه مفيش صرف');
   $('#c-rows').innerHTML = RAW.receipts.slice(0, 30).map(r => `
     <div class="row ${r.Void === 'yes' ? 'void' : ''}">
       <div class="m"><b>${esc(r.ID)}</b>
-        <small>${esc(r.Supplier)} · متوسط ${fmt(r.Avg_kg)} كجم${r.Ref ? ' · ' + esc(r.Ref) : ''}</small>
-        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
-      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Net_kg)} kg</small></div>
-      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amendRaw('receipt','${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidRaw('receipt','${esc(r.ID)}')">إلغاء</button></div>` : ''}
-    </div>`).join('') || '<div style="color:#6b7785">لسه مفيش توريدات</div>';
-  $('#b-rows').innerHTML = RAW.balances.map(b => `
-    <div class="bal"><div class="n">${esc(b.supplier)} <small style="color:#6b7785;font-weight:400">متوسط ${fmt(b.avg)} كجم</small></div>
+        <small>${esc(r.Supplier)} · خشن ${fmt(r.Coarse)} · ناعم ${fmt(r.Fine)} · سكري ${fmt(r.Sugar)}</small>
+        <small>متوسط ${fmt(r.Avg_kg)} كجم${r.Ref ? ' · ' + esc(r.Ref) : ''} · ${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
+      <div class="w">${fmt(r.Jumbos)} جامبو<small>${fmt(r.Net_kg)} kg</small></div>${btns('receipt', r)}
+    </div>`).join('') || empty('لسه مفيش توريدات');
+  const bySup = {};
+  RAW.balances.forEach(b => (bySup[b.supplier] = bySup[b.supplier] || []).push(b));
+  $('#b-rows').innerHTML = Object.keys(bySup).map(s => `
+    <div class="bal"><div class="n">${esc(s)}</div>
+      ${bySup[s].map(b => `<div style="margin-top:8px"><span style="font-weight:700">${esc(SALT_AR[b.salt])}</span> <small style="color:#6b7785">متوسط ${fmt(b.avg)} كجم</small>
+        <div class="g">
+          <div>دخل<b>${fmt(b.recJ)}</b><b class="s">${fmt(b.recKg)} kg</b></div>
+          <div>صُرف<b>${fmt(b.issJ)}</b><b class="s">${fmt(b.issKg)} kg</b></div>
+          <div class="${b.balJ < 0 ? 'low' : ''}">الرصيد<b>${fmt(b.balJ)}</b><b class="s">${fmt(b.balKg)} kg</b></div>
+        </div></div>`).join('')}
+    </div>`).join('') || empty('مفيش موردين. ضيفهم في تبويب Settings');
+  $('#e-rows').innerHTML = RAW.owed.map(o => `
+    <div class="bal"><div class="n">${esc(o.supplier)}</div>
       <div class="g">
-        <div>دخل<b>${fmt(b.recJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.recKg)} kg</b></div>
-        <div>صُرف<b>${fmt(b.issJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.issKg)} kg</b></div>
-        <div class="${b.balJ < 0 ? 'low' : ''}">الرصيد<b>${fmt(b.balJ)}</b><b style="font-size:12px;color:#6b7785">${fmt(b.balKg)} kg</b></div>
-      </div></div>`).join('') || '<div style="color:#6b7785">مفيش موردين</div>';
+        <div class="${o.owed > 0 ? 'good' : ''}">عندنا فاضي<b>${fmt(o.owed)}</b></div>
+        <div>اتفضّى (مصروف)<b>${fmt(o.issued + o.opening)}</b></div>
+        <div>رجّعنا/تالف<b>${fmt(o.returned + o.writeoff)}</b></div>
+      </div></div>`).join('') || empty('مفيش موردين');
+  $('#e-list').innerHTML = RAW.returns.slice(0, 30).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b> <small>${esc(r.Supplier)} · ${esc(KIND_AR[r.Kind] || r.Kind)}${r.Reason ? ' · ' + esc(r.Reason) : ''}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
+      <div class="w">${fmt(r.Jumbos)}</div>${btns('return', r)}
+    </div>`).join('') || empty('لسه مفيش حركات');
 }
 
 async function amendRaw(kind, id) {
-  let data = { kind, id };
-  if (kind === 'issue') {
-    const n = prompt('العدد الجديد للجامبوهات في ' + id); if (!n) return; data.jumbos = Number(n);
-  } else {
-    const n = prompt('عدد الجامبوهات الجديد (سيب فاضي لو مش هتغيّره)', ''); if (n) data.jumbos = Number(n);
-    const k = prompt('الوزن الصافي الجديد بالكجم (سيب فاضي لو مش هتغيّره)', ''); if (k) data.net_kg = Number(k);
-    if (!n && !k) return;
-  }
+  const data = { kind, id };
+  if (kind === 'issue') { const n = prompt('العدد الجديد للجامبوهات في ' + id); if (!n) return; data.jumbos = Number(n); }
+  else { const k = prompt('الوزن الصافي الجديد بالكجم لـ ' + id); if (!k) return; data.net_kg = Number(k); }
   const r = prompt('سبب التعديل (إجباري)'); if (!r) return; data.reason = r;
   try { await api('amend', data); loadRaw(); } catch (e) { alert(errText(e)); }
 }
@@ -413,7 +558,88 @@ async function voidRaw(kind, id) {
   try { await api('void', { kind, id, reason: r }); loadRaw(); } catch (e) { alert(errText(e)); }
 }
 
-// ---------- press list / exceptions ----------
+// ---------- sieve ----------
+async function loadSieve() {
+  try { const j = await api('pending_sieve'); PEND = j.pending; RUNS = j.runs; } catch (e) { return; }
+  renderSieve();
+}
+function selectedIds() { return [...document.querySelectorAll('#sv-pending input:checked')].map(c => c.dataset.id); }
+function selectedRows() { const s = selectedIds(); return PEND.filter(r => s.indexOf(r.ID) >= 0); }
+
+function renderSieve() {
+  $('#sv-pending').innerHTML = PEND.map(r => `
+    <label class="row"><input type="checkbox" data-id="${esc(r.ID)}">
+      <div class="m"><b>${esc(r.ID)}</b>
+        <small>${esc(r.Supplier)} · ${esc(SALT_AR[r.Salt] || '—')} · ${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(TYPE_AR[r.Type] || r.Type)}</small>
+        <small>${esc(r.Date)}</small></div>
+      <div class="w">${fmt(r.Weight_kg)}</div></label>`).join('') || empty('مفيش جامبوهات محتاجة غربلة');
+  document.querySelectorAll('#sv-pending input').forEach(c => c.onchange = () => {
+    const rows = selectedRows();
+    const sups = [...new Set(rows.map(r => r.Supplier))];
+    if (sups.length > 1) { c.checked = false; setMsg('#sv-msg', 'اغربل كل مورد لوحده. الجامبو ده من مورد تاني.', 'warn'); return; }
+    $('#sv-msg').className = 'msg';
+    svCalc();
+  });
+  $('#sv-runs').innerHTML = RUNS.slice(0, 15).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b> <small>${esc(r.Supplier)} · ${esc(SALT_AR[r.Salt] || r.Salt)} · ${esc(r.Shift)}</small>
+        <small>داخل ${fmt(r.Input_kg)} · سليم ${fmt(r.Sound_kg)} · كسر ${fmt(r.Shards_kg)} · باودر ${fmt(r.Powder_kg)} (${r.Powder_pct}%)</small>
+        <small>فاقد ${fmt(r.Loss_kg)} (${r.Loss_pct}%) · ${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div>
+      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="voidRaw('sieve','${esc(r.ID)}')">إلغاء</button></div>` : ''}
+    </div>`).join('') || empty('لسه مفيش تشغيلات');
+  if (!$('#sv-sound').children.length) addSoundRow();
+  svCalc();
+}
+function addSoundRow() {
+  const d = document.createElement('div'); d.className = 'srow';
+  d.innerHTML = '<input type="number" inputmode="decimal" placeholder="وزن الجامبو (كجم)"><button class="sm" type="button">حذف</button>';
+  d.querySelector('input').oninput = svCalc;
+  d.querySelector('button').onclick = () => { d.remove(); svCalc(); };
+  $('#sv-sound').appendChild(d);
+}
+$('#sv-add').onclick = addSoundRow;
+$('#sv-shards').oninput = $('#sv-powder').oninput = () => svCalc();
+
+function svVals() {
+  const sound = [...document.querySelectorAll('#sv-sound input')].map(i => Number(i.value)).filter(x => x > 0);
+  return { sound, shards: Number($('#sv-shards').value) || 0, powder: Number($('#sv-powder').value) || 0 };
+}
+function svCalc() {
+  if (!CFG) return false;
+  const rows = selectedRows(), inKg = rows.reduce((a, r) => a + Number(r.Weight_kg), 0);
+  $('#sv-insum').innerHTML = rows.length
+    ? `${rows.length} جامبو · ${esc(rows[0].Supplier)} · إجمالي الداخل: <b>${fmt(inKg)} كجم</b>` : 'لسه ما اخترتش حاجة';
+  const v = svVals(), soundKg = v.sound.reduce((a, b) => a + b, 0), out = soundKg + v.shards + v.powder;
+  let over = false;
+  if (!rows.length || out <= 0) $('#sv-calc').textContent = '—';
+  else {
+    const loss = inKg - out, lp = loss / inKg * 100, pp = v.powder / inKg * 100;
+    over = out > inKg * 1.005;
+    let t = `الناتج: ${fmt(out)} كجم · الفرق: <b>${fmt(Math.round(loss))} كجم (${lp.toFixed(1)}%)</b><br>الباودر: ${pp.toFixed(1)}% (المرجع ${(CFG.powderRef * 100).toFixed(1)}%)`;
+    if (lp > CFG.lossTol * 100 && !over) t += '<br>⚠ الفاقد أعلى من المعتاد';
+    if (Math.abs(pp / 100 - CFG.powderRef) > CFG.powderTol) t += '<br>⚠ نسبة الباودر بعيدة عن المرجع';
+    $('#sv-calc').innerHTML = t;
+  }
+  $('#sv-reasonBox').style.display = over ? 'block' : 'none';
+  return over;
+}
+$('#sv-save').onclick = async () => {
+  $('#sv-msg').className = 'msg';
+  const ids = selectedIds(); if (!ids.length) return setMsg('#sv-msg', 'اختار جامبوهات الغربال', 'err');
+  const v = svVals(), over = svCalc();
+  if (v.sound.length + (v.shards > 0) + (v.powder > 0) === 0) return setMsg('#sv-msg', 'سجل ناتج واحد على الأقل', 'err');
+  const b = $('#sv-save'); b.disabled = true;
+  try {
+    const j = await api('add_sieve', { ids, sound: v.sound, shards_kg: v.shards, powder_kg: v.powder, reason: over ? $('#sv-reason').value.trim() : '' });
+    setMsg('#sv-msg', `اتسجل ${j.id} · الفرق ${fmt(j.loss)} كجم (${j.lossPct}%) · باودر ${j.powderPct}%` +
+      (j.newIds.length ? ' · جامبوهات سليمة: ' + j.newIds.join(', ') : '') + (j.flags.length ? ' · ⚠ ' + j.flags.join('; ') : ''), j.flags.length ? 'warn' : 'ok');
+    $('#sv-sound').innerHTML = ''; $('#sv-shards').value = ''; $('#sv-powder').value = ''; $('#sv-reason').value = '';
+    await loadSieve();
+  } catch (e) { setMsg('#sv-msg', errText(e) + (e.data && e.data.id ? ' (' + e.data.id + ')' : ''), 'err'); }
+  b.disabled = false;
+};
+
+// ---------- press list ----------
 async function loadList() {
   try { ROWS = (await api('list', { limit: 200 })).rows; } catch (e) { return; }
   const today = new Date().toLocaleDateString('sv-SE');
@@ -424,13 +650,12 @@ async function loadList() {
   $('#rows').innerHTML = ROWS.slice(0, 80).map(r => `
     <div class="row ${r.Void === 'yes' ? 'void' : ''}">
       <div class="m"><b>${esc(r.ID)}</b>
-        <small>${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
-        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)}</small>${flagPill(r)}
+        <small>${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(SALT_AR[r.Salt] || '—')} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)} · ${esc(ST_AR[r.Status] || r.Status)}</small>${flagPill(r)}
       </div>
       <div class="w">${fmt(r.Weight_kg)}</div>
       ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amend('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidJ('${esc(r.ID)}')">إلغاء</button></div>` : ''}
-    </div>`).join('') || '<div style="color:#6b7785">مفيش بيانات لسه</div>';
-  if (isSup()) renderExc();
+    </div>`).join('') || empty('مفيش بيانات لسه');
 }
 async function amend(id) {
   const w = prompt('الوزن الجديد (كجم) للجامبو ' + id); if (!w) return;
@@ -441,25 +666,46 @@ async function voidJ(id) {
   const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
   try { await api('void', { id, reason: r }); loadList(); } catch (e) { alert(errText(e)); }
 }
-async function renderExc() {
-  const live = ROWS.filter(r => r.Void !== 'yes');
-  const sumBy = (arr, k) => { const o = {}; arr.forEach(r => { o[r[k]] = (o[r[k]] || 0) + Number(r.Weight_kg || 0); }); return o; };
-  const st = sumBy(live, 'Status');
-  $('#bal').innerHTML = Object.keys(st).map(k => `<div class="sum"><span>${esc(ST_AR[k] || k)}</span><span dir="ltr">${fmt(st[k])} kg</span></div>`).join('') || '—';
-  const sup = {};
-  live.forEach(r => { const o = sup[r.Supplier] = sup[r.Supplier] || { total: 0, n: 0 }; o.total += Number(r.Weight_kg || 0); o.n++; });
-  $('#bySup').innerHTML = Object.keys(sup).map(k => `<div class="sum"><span>${esc(k)} (${sup[k].n})</span><span dir="ltr">${fmt(sup[k].total)} kg</span></div>`).join('') || '—';
-  const ex = ROWS.filter(r => r.Flag);
-  $('#excRows').innerHTML = ex.slice(0, 60).map(r => `
-    <div class="row ${r.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(r.ID)}</b> <span dir="ltr">${fmt(r.Weight_kg)} kg</span>
-      <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Shift)}</small>${flagPill(r)}</div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
+
+// ---------- reports ----------
+$('#rp-period').onchange = () => loadReports();
+async function loadReports() {
+  if (!isSup()) return;
+  const p = $('#rp-period').value, today = new Date().toLocaleDateString('sv-SE');
+  const from = p === '7' ? new Date(Date.now() - 7 * 864e5).toLocaleDateString('sv-SE') : p === 'month' ? today.slice(0, 8) + '01' : '';
   try {
-    const rw = await api('raw_list', { limit: 100 });
-    const items = rw.issues.concat(rw.receipts).filter(r => r.Flag).sort((a, b) => b.Timestamp.localeCompare(a.Timestamp));
-    $('#excRaw').innerHTML = items.slice(0, 60).map(r => `
-      <div class="row ${r.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(r.ID)}</b> ${esc(r.Supplier)} · ${fmt(r.Jumbos)} جامبو
-        <small>${esc(r.Timestamp)} · ${esc(r.User)}</small>${flagPill(r)}</div></div>`).join('') || '<div style="color:#6b7785">مفيش استثناءات</div>';
-  } catch (e) {}
+    const [rp, li, rw, sv] = await Promise.all([api('report', { from }), api('list', { limit: 300 }), api('raw_list', { limit: 100 }), api('pending_sieve')]);
+    ROWS = li.rows;
+    $('#rp-waste').innerHTML = rp.rows.map(o => `
+      <div class="bal"><div class="n">${esc(o.supplier)} · ${esc(SALT_AR[o.salt] || o.salt)}</div>
+        <div class="g">
+          <div>خام مصروف<b>${fmt(o.issued)}</b></div>
+          <div>أقراص سليمة<b>${fmt(o.soundFinal)}</b></div>
+          <div class="${o.yieldPct != null && o.yieldPct < 85 ? 'low' : 'good'}">الإنتاجية<b>${o.yieldPct == null ? '—' : o.yieldPct + '%'}</b></div>
+        </div>
+        <div class="g">
+          <div>كسر<b>${fmt(o.shards)}</b></div>
+          <div>باودر<b>${fmt(o.powder)}</b></div>
+          <div>هالك %<b>${o.wastePct == null ? '—' : o.wastePct + '%'}</b></div>
+        </div>
+        <div class="g">
+          <div>قيد الغربلة<b>${fmt(o.wip)}</b></div>
+          <div>فاقد مكبس<b>${fmt(o.pressLoss)}</b></div>
+          <div>فاقد غربال<b>${fmt(o.sieveLoss)}</b></div>
+        </div></div>`).join('') || empty('مفيش بيانات في الفترة دي');
+    const live = ROWS.filter(r => r.Void !== 'yes'), st = {};
+    live.forEach(r => { st[r.Status] = (st[r.Status] || 0) + Number(r.Weight_kg || 0); });
+    $('#bal').innerHTML = Object.keys(st).map(k => `<div class="sum"><span>${esc(ST_AR[k] || k)}</span><span dir="ltr">${fmt(st[k])} kg</span></div>`).join('') || '—';
+    const items = [];
+    ROWS.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
+    rw.issues.concat(rw.receipts).filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
+    rw.returns.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
+    sv.runs.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
+    items.sort((a, b) => b.t.localeCompare(a.t));
+    $('#excRows').innerHTML = items.slice(0, 80).map(x => `
+      <div class="row ${x.f.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(x.id)}</b> <small>${esc(x.f.Supplier || '')}</small>
+        <small>${esc(x.t)} · ${esc(x.who)}</small>${flagPill(x.f)}</div></div>`).join('') || empty('مفيش استثناءات');
+  } catch (e) { $('#rp-waste').innerHTML = empty(errText(e)); }
 }
 
 // auto-login if saved
