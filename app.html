@@ -12,8 +12,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,Segoe UI,Roboto,Ari
 .top b{letter-spacing:1px}
 .top span{font-size:13px;color:#b9c7d8}
 .top button{background:none;border:0;color:#b9c7d8;font-size:14px;margin-inline-start:10px}
-.tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea}
-.tabs button{flex:1;padding:13px 2px;border:0;background:none;font-size:13px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #dde4ea;overflow-x:auto;white-space:nowrap}
+.tabs button{flex:1 0 auto;padding:13px 14px;border:0;background:none;font-size:14px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent}
 .tabs button.on{color:var(--navy);border-color:var(--gold)}
 .wrap{max-width:520px;margin:0 auto;padding:14px}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,42,74,.07)}
@@ -24,11 +24,11 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
 .seg button{flex:1;min-width:30%;padding:13px 6px;border:2px solid #cdd6df;background:#fff;border-radius:10px;font-size:15px;font-weight:600}
 .seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
-.seg.two button{min-width:45%}
 .go{width:100%;padding:16px;border:0;border-radius:12px;background:var(--gold);color:#222;font-size:18px;font-weight:800;margin-top:16px}
+.go.alt{background:#e9eef3;color:var(--navy)}
 .go:disabled{opacity:.5}
 .sm{padding:6px 10px;border:1px solid #cdd6df;background:#fff;border-radius:8px;font-size:12px;margin-inline-start:6px}
-.msg{padding:10px;border-radius:8px;margin-top:10px;font-size:14px;display:none}
+.msg{padding:10px;border-radius:8px;margin-top:10px;font-size:14px;display:none;line-height:1.6}
 .msg.err{display:block;background:#fdecea;color:var(--err)}
 .msg.warn{display:block;background:#fff4d6;color:var(--warn)}
 .msg.ok{display:block;background:#e6f5ec;color:var(--ok)}
@@ -49,6 +49,7 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .row.void{opacity:.45;text-decoration:line-through}
 .row input[type=checkbox]{width:22px;height:22px}
 .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#fff4d6;color:var(--warn);margin-top:3px}
+.pill.ok{background:#e6f5ec;color:var(--ok)}
 .sum{display:flex;justify-content:space-between;font-weight:700;padding:5px 0;color:var(--navy)}
 .bal{padding:12px 0;border-bottom:1px solid #eef1f4}
 .bal:last-child{border:0}
@@ -58,21 +59,41 @@ input.big{font-size:30px;font-weight:700;text-align:center}
 .bal .g div b.s{font-size:12px;color:var(--mute);font-weight:400}
 .bal .g div.low b:first-of-type{color:var(--err)}
 .bal .g div.good b:first-of-type{color:var(--ok)}
+.bar{height:8px;background:#e6ebf0;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--gold)}
+.bar i.full{background:var(--ok)}
+.bar i.over{background:var(--err)}
 h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
 .sec{display:none}.sec.on{display:block}
 .sub{display:none}.sub.on{display:block}
 .srow{display:flex;gap:8px;margin-top:8px}
 .srow input{flex:1;font-size:20px;text-align:center}
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block}
+  .olabel{text-align:center;font-family:Arial,sans-serif;border:2px solid #0b2a4a;padding:14mm 10mm}
+  .olabel .brand{font-size:26pt;font-weight:800;letter-spacing:3px;color:#0b2a4a}
+  .olabel .closed{display:inline-block;margin:6mm 0;padding:3mm 10mm;border:3px solid #1a8f4c;color:#1a8f4c;font-size:28pt;font-weight:800;letter-spacing:4px}
+  .olabel .oid{font-size:24pt;font-weight:800;direction:ltr}
+  .olabel .cust{font-size:20pt;margin:4mm 0}
+  .olabel .tot{font-size:34pt;font-weight:800;direction:ltr;margin:4mm 0}
+  .olabel .line{font-size:14pt;margin:2mm 0;direction:ltr}
+  .olabel #oq{display:inline-block;margin-top:8mm;line-height:0}
+}
 </style>
 </head>
 <body>
 <div class="top"><b>OG · WAREHOUSE</b><div><span id="who"></span><button id="logout" style="display:none">خروج</button></div></div>
 <div class="tabs" id="tabs" style="display:none">
-  <button data-v="reg" class="on">المكبس</button>
-  <button data-v="raw">الخام</button>
-  <button data-v="sieve">الغربال</button>
-  <button data-v="list">اليوم</button>
-  <button data-v="exc" id="t-exc" style="display:none">تقارير</button>
+  <button data-v="raw" data-k="raw">الخام</button>
+  <button data-v="reg" data-k="prod">الإنتاج</button>
+  <button data-v="sieve" data-k="sieve">الغربال</button>
+  <button data-v="pack" data-k="pack">التعبئة</button>
+  <button data-v="list" data-k="list">اليوم</button>
+  <button data-v="exc" data-k="reports">تقارير</button>
 </div>
 <div class="wrap">
 
@@ -90,7 +111,7 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   <div class="msg" id="l-msg"></div>
 </div></div>
 
-<!-- press register -->
+<!-- production -->
 <div class="sec" id="v-reg">
   <div class="card">
     <label class="t">المكبس</label>
@@ -100,14 +121,14 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
     <label class="t">نوع الجامبو</label>
     <div class="seg" id="g-type">
       <button data-v="Sound" class="on">أقراص سليمة</button>
-      <button data-v="Mixed waste">هالك مخلوط</button>
-      <button data-v="Full output">إنتاج كامل</button>
+      <button data-v="Mixed waste">باودر مخلوط</button>
+      <button data-v="Full output">إنتاج تام</button>
     </div>
     <label class="t">مورد الخام</label>
     <select id="supplier"><option value="">— اختر —</option></select>
     <label class="t">الحجز</label>
-    <div class="seg" id="g-res"><button data-v="Stock" class="on">ستوك</button><button data-v="Client">لعميل</button></div>
-    <input type="text" id="client" dir="ltr" placeholder="كود العميل مثال: P004" style="display:none;margin-top:8px">
+    <div class="seg" id="g-res"><button data-v="Stock" class="on">رصيد المصنع</button><button data-v="Client">رصيد لعميل</button></div>
+    <select id="client" style="display:none;margin-top:8px"></select>
     <label class="t">الوزن (كجم)</label>
     <input type="number" id="weight" class="big" inputmode="decimal" placeholder="0">
     <div id="reasonBox" style="display:none">
@@ -232,24 +253,77 @@ h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
   <div class="card"><h3>آخر التشغيلات</h3><div id="sv-runs"></div></div>
 </div>
 
+<!-- packing -->
+<div class="sec" id="v-pack">
+  <div class="card">
+    <h3>تعبئة جديدة</h3>
+    <label class="t">ماكينة التعبئة</label>
+    <div class="seg" id="g-pmach"></div>
+    <label class="t">الطلبية (العميل)</label>
+    <select id="p-order"><option value="">— اختر الطلبية —</option></select>
+    <label class="t">طريقة التعبئة</label>
+    <div class="seg" id="g-ptype">
+      <button data-v="Bag25" class="on">شكاير 25 كجم</button>
+      <button data-v="Bag10">شكاير 10 كجم</button>
+      <button data-v="Jumbo">جامبو باج</button>
+    </div>
+    <label class="t">الأقراص من</label>
+    <div class="seg" id="g-psrc"><button data-v="Cust" class="on">رصيد العميل</button><button data-v="Stock">رصيد المصنع</button></div>
+    <div class="info" id="p-info">اختار الطلبية</div>
+    <label class="t">وزن الجامبو المعبأ من الميزان (كجم، قائم)</label>
+    <input type="number" id="p-gross" class="big" inputmode="decimal" placeholder="0">
+    <div class="info" id="p-net" style="display:none"></div>
+    <div id="p-reasonBox" style="display:none">
+      <div class="msg warn" style="display:block" id="p-rtext"></div>
+      <select id="p-reason" style="margin-top:8px"></select>
+    </div>
+    <button class="go" id="p-save">تسجيل الجامبو المعبأ</button>
+    <div class="msg" id="p-msg"></div>
+  </div>
+  <div class="card"><h3>آخر التعبئات</h3><div id="p-rows"></div></div>
+
+  <div class="card" id="o-new" style="display:none">
+    <h3>طلبية جديدة (المدير)</h3>
+    <label class="t">العميل</label>
+    <select id="o-cust"></select>
+    <label class="t">الكمية المطلوبة (طن)</label>
+    <input type="number" id="o-tons" class="big" inputmode="decimal" placeholder="0">
+    <label class="t">طريقة التعبئة الافتراضية</label>
+    <div class="seg" id="g-optype"><button data-v="Bag25" class="on">شكاير 25</button><button data-v="Bag10">شكاير 10</button><button data-v="Jumbo">جامبو باج</button></div>
+    <label class="t">تاريخ الشحن</label>
+    <input type="text" id="o-ship" dir="ltr" placeholder="2026-12-05">
+    <label class="t">شرط التسليم</label>
+    <input type="text" id="o-inco" dir="ltr" value="EXW">
+    <label class="t">ملاحظات</label>
+    <input type="text" id="o-notes">
+    <button class="go" id="o-save">إنشاء الطلبية</button>
+    <div class="msg" id="o-msg"></div>
+  </div>
+  <div class="card" id="o-list-card" style="display:none"><h3>الطلبيات</h3><div id="o-list"></div></div>
+</div>
+
 <!-- list -->
 <div class="sec" id="v-list"><div class="card"><div id="sum"></div><div id="rows"></div></div></div>
 
 <!-- reports -->
 <div class="sec" id="v-exc">
   <div class="card">
-    <label class="t">الفترة</label>
+    <label class="t">الفترة (للهالك والإنتاجية)</label>
     <select id="rp-period"><option value="all">كل الفترة</option><option value="7">آخر 7 أيام</option><option value="month">هذا الشهر</option></select>
   </div>
+  <div class="card"><h3>الطلبيات</h3><div id="rp-orders"></div></div>
+  <div class="card"><h3>رصيد الأقراص الجاهزة للتعبئة</h3><div id="rp-pools"></div></div>
   <div class="card"><h3>الهالك والإنتاجية (مورد × نوع ملح)</h3>
-    <div style="font-size:11px;color:var(--mute);margin-bottom:6px">تقريبي: الخام المصروف اللي لسه بيتكبس بيظهر كفاقد مكبس مؤقتًا.</div>
+    <div style="font-size:11px;color:var(--mute);margin-bottom:6px">تقريبي: الخام المصروف اللي لسه بيتكبس بيظهر مؤقتًا كفاقد.</div>
     <div id="rp-waste"></div></div>
-  <div class="card"><h3>أرصدة الأقراص (بدون الملغي)</h3><div id="bal"></div></div>
+  <div class="card"><h3>أرصدة الإنتاج (بدون الملغي)</h3><div id="bal"></div></div>
   <div class="card"><h3>الاستثناءات</h3><div id="excRows"></div></div>
 </div>
 
 </div>
+<div id="printArea"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const LS = {
@@ -258,20 +332,25 @@ const LS = {
   del: k => { try { localStorage.removeItem(k) } catch (e) {} }
 };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const TYPE_AR = {'Sound':'أقراص سليمة','Mixed waste':'هالك مخلوط','Full output':'إنتاج كامل'};
+const TYPE_AR = {'Sound':'أقراص سليمة','Mixed waste':'باودر مخلوط','Full output':'إنتاج تام'};
 const PRESS_AR = {'Indian':'هندي','Turkish':'تركي','Mixed':'مخلوط'};
 const SALT_AR = {'Coarse':'خشن','Fine':'ناعم','Sugar':'سكري','Mixed':'مخلوط','Unspecified':'غير محدد','':'—'};
 const ST_AR = {'Ready for packing':'جاهز للتعبئة','Needs sieving':'يحتاج غربلة','Sieved':'اتغربل','Void':'ملغي'};
 const KIND_AR = {'Return':'رجّعنا','Write-off':'تالف/مفقود','Opening':'افتتاحي'};
+const PT_AR = {'Bag25':'شكاير 25 كجم','Bag10':'شكاير 10 كجم','Jumbo':'جامبو باج'};
 const PRESS_OK = { Turkish: ['Coarse', 'Sugar'], Indian: ['Fine', 'Sugar'] };
 const mism = (press, salt) => PRESS_OK[press].indexOf(salt) < 0;
 const autoSalt = p => p === 'Indian' ? 'Fine' : 'Coarse';
 const fmt = n => Number(n || 0).toLocaleString('en');
+const r1 = x => Math.round(x * 10) / 10;
 
 let API = LS.get('og_api') || '', U = LS.get('og_user') || '', P = LS.get('og_pin') || '';
-let ME = null, CFG = null, ROWS = [], RAW = null, PEND = [], RUNS = [];
+let ME = null, CFG = null, ROWS = [], RAW = null, PEND = [], RUNS = [], PK = { orders: [], pools: [], packs: [] };
 const touched = {};
 const isSup = () => ME && (ME.role === 'admin' || ME.role === 'supervisor');
+const isAdmin = () => ME && ME.role === 'admin';
+const custName = {};
+const resLabel = r => !r || r === 'Stock' ? 'رصيد المصنع' : ('رصيد ' + r + (custName[r] ? ' (' + custName[r] + ')' : ''));
 
 async function api(action, data) {
   if (!API) throw new Error('حط رابط السيستم في "إعدادات الربط"');
@@ -287,7 +366,9 @@ const ERR = {
   salt: 'اختار نوع الملح', ids: 'اختار جامبو واحد على الأقل', sound: 'وزن جامبو سليم غير صحيح',
   outputs: 'سجل ناتج واحد على الأقل', mixed_supplier: 'الجامبوهات المختارة من أكتر من مورد. اغربل كل مورد لوحده',
   not_pending: 'جامبو مش في قايمة الغربلة (اتغربل قبل كده أو اتلغى)', already_used: 'جامبوهات ناتجة من الغربلة اتستخدمت ومش ينفع الإلغاء',
-  noamend: 'التعديل مش متاح هنا. الغي وسجل من جديد', kind: 'نوع غير صحيح'
+  noamend: 'التعديل مش متاح هنا. الغي وسجل من جديد', kind: 'نوع غير صحيح',
+  customer: 'العميل مش موجود في تبويب Customers', order_closed: 'الطلبية دي مقفولة', source: 'مصدر الأقراص غير صحيح',
+  machine: 'اختار ماكينة التعبئة', packtype: 'اختار طريقة التعبئة', has_packs: 'الطلبية فيها تعبئات مسجلة. مش ينفع تلغيها'
 };
 const errText = e => ERR[e.message] || e.message;
 const setMsg = (id, text, cls) => { const m = $(id); m.textContent = text; m.className = 'msg ' + cls; };
@@ -302,16 +383,15 @@ function show(v) {
   if (v === 'exc') loadReports();
   if (v === 'raw') loadRaw();
   if (v === 'sieve') loadSieve();
+  if (v === 'pack') loadPack();
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.v));
 
 function pick(id, v) { document.querySelectorAll('#' + id + ' button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
 function seg(id, cb) {
-  document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
-    pick(id, b.dataset.v); if (cb) cb(b.dataset.v);
-  });
+  document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => { pick(id, b.dataset.v); if (cb) cb(b.dataset.v); });
 }
-const val = id => document.querySelector('#' + id + ' button.on').dataset.v;
+const val = id => { const b = document.querySelector('#' + id + ' button.on'); return b ? b.dataset.v : ''; };
 
 seg('g-type');
 seg('g-press', v => { if (!touched.salt) pick('g-salt', autoSalt(v)); });
@@ -320,6 +400,9 @@ seg('g-res', v => { $('#client').style.display = v === 'Client' ? 'block' : 'non
 seg('g-ipress', v => { if (!touched.isalt) pick('g-isalt', autoSalt(v)); issueInfo(); });
 seg('g-isalt', () => { touched.isalt = true; issueInfo(); });
 seg('g-ekind');
+seg('g-optype');
+seg('g-ptype', () => packInfo());
+seg('g-psrc', () => packInfo());
 seg('g-raw', v => {
   document.querySelectorAll('.sub').forEach(e => e.classList.remove('on'));
   $('#s-' + v).classList.add('on');
@@ -347,18 +430,34 @@ function start(j) {
   $('#who').textContent = j.name + (j.role === 'admin' ? ' (مدير)' : j.role === 'supervisor' ? ' (مشرف)' : '');
   $('#logout').style.display = 'inline';
   $('#tabs').style.display = 'flex';
-  $('#t-exc').style.display = isSup() ? 'block' : 'none';
+  let first = null;
+  document.querySelectorAll('#tabs button').forEach(b => {
+    const ok = j.tabs.indexOf(b.dataset.k) >= 0;
+    b.style.display = ok ? 'block' : 'none';
+    if (ok && !first) first = b.dataset.v;
+  });
   $('#b-recv').style.display = isSup() ? 'block' : 'none';
   $('#e-form').style.display = isSup() ? 'block' : 'none';
-  $('#b-open').style.display = j.role === 'admin' ? 'block' : 'none';
+  $('#b-open').style.display = isAdmin() ? 'block' : 'none';
+  $('#o-new').style.display = isAdmin() ? 'block' : 'none';
+  $('#o-list-card').style.display = isSup() ? 'block' : 'none';
   const opts = '<option value="">— اختر —</option>' + j.suppliers.map(s => `<option>${esc(s)}</option>`).join('');
   ['#supplier', '#i-sup', '#c-sup', '#e-sup'].forEach(id => $(id).innerHTML = opts);
+  j.customers.forEach(c => { custName[c.code] = c.name; });
+  const copts = j.customers.length
+    ? '<option value="">— اختر العميل —</option>' + j.customers.map(c => `<option value="${esc(c.code)}">${esc(c.code)} — ${esc(c.name)}</option>`).join('')
+    : '<option value="">(ضيف العملاء في تبويب Customers بالشيت)</option>';
+  $('#client').innerHTML = copts; $('#o-cust').innerHTML = copts;
   $('#reason').innerHTML = j.reasons.map(r => `<option>${esc(r)}</option>`).join('');
   $('#i-reason').innerHTML = j.rawReasons.map(r => `<option>${esc(r)}</option>`).join('');
-  show('reg');
+  $('#p-reason').innerHTML = j.packReasons.map(r => `<option>${esc(r)}</option>`).join('');
+  $('#g-pmach').innerHTML = j.machines.map(m => `<button data-v="${esc(m)}">${esc(m)}</button>`).join('');
+  seg('g-pmach', v => LS.set('og_machine', v));
+  const sm = LS.get('og_machine'); if (sm && j.machines.indexOf(sm) >= 0) pick('g-pmach', sm);
+  show(first || 'reg');
 }
 
-// ---------- press ----------
+// ---------- production ----------
 $('#weight').oninput = () => {
   const w = Number($('#weight').value);
   const out = CFG && w > 0 && (w < CFG.minW || w > CFG.maxW);
@@ -368,10 +467,10 @@ $('#weight').oninput = () => {
 async function doSave(confirmDup) {
   $('#r-msg').className = 'msg';
   const w = Number($('#weight').value), sup = $('#supplier').value;
-  const res = val('g-res') === 'Client' ? $('#client').value.trim().toUpperCase() : 'Stock';
+  const res = val('g-res') === 'Client' ? $('#client').value : 'Stock';
   if (!(w > 0)) return setMsg('#r-msg', 'اكتب الوزن', 'err');
   if (!sup) return setMsg('#r-msg', 'اختار المورد', 'err');
-  if (!res) return setMsg('#r-msg', 'اكتب كود العميل', 'err');
+  if (!res) return setMsg('#r-msg', 'اختار العميل', 'err');
   const out = w < CFG.minW || w > CFG.maxW;
   const b = $('#save'); b.disabled = true;
   try {
@@ -555,7 +654,7 @@ async function amendRaw(kind, id) {
 }
 async function voidRaw(kind, id) {
   const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
-  try { await api('void', { kind, id, reason: r }); loadRaw(); } catch (e) { alert(errText(e)); }
+  try { await api('void', { kind, id, reason: r }); if (kind === 'sieve') loadSieve(); else loadRaw(); } catch (e) { alert(errText(e)); }
 }
 
 // ---------- sieve ----------
@@ -639,7 +738,172 @@ $('#sv-save').onclick = async () => {
   b.disabled = false;
 };
 
-// ---------- press list ----------
+// ---------- packing ----------
+async function loadPack() {
+  try { PK = await api('pack_list'); } catch (e) { return; }
+  renderPack();
+}
+const poolOf = k => PK.pools.find(p => p.pool === k);
+const selOrder = () => PK.orders.find(o => o.id === $('#p-order').value);
+
+function renderPack() {
+  const cur = $('#p-order').value;
+  const open = PK.orders.filter(o => o.status === 'Open');
+  $('#p-order').innerHTML = '<option value="">— اختر الطلبية —</option>' + open.map(o =>
+    `<option value="${esc(o.id)}">${esc(o.customer)} · ${esc(o.name)} — ${fmt(o.targetKg / 1000)} طن (معبأ ${fmt(r1(o.packedKg / 1000))})</option>`).join('');
+  if (cur && open.some(o => o.id === cur)) $('#p-order').value = cur;
+  packInfo();
+
+  $('#p-rows').innerHTML = PK.packs.slice(0, 30).map(r => `
+    <div class="row ${r.Void === 'yes' ? 'void' : ''}">
+      <div class="m"><b>${esc(r.ID)}</b>
+        <small>${esc(r.Machine)} · ${esc(r.Customer)} · ${esc(PT_AR[r.PackType] || r.PackType)}${r.EstBags ? ' · ≈ ' + fmt(r.EstBags) + ' شكارة' : ''}</small>
+        <small>${esc(r.Timestamp)} · ${esc(r.User)} · من ${esc(resLabel(r.Source))}</small>${flagPill(r)}</div>
+      <div class="w">${fmt(r.Net_kg)}<small>قائم ${fmt(r.Gross_kg)}</small></div>
+      ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amendPack('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidPack('${esc(r.ID)}')">إلغاء</button></div>` : ''}
+    </div>`).join('') || empty('لسه مفيش تعبئات');
+
+  if (isSup()) {
+    $('#o-list').innerHTML = PK.orders.map(o => {
+      const pct = o.pct, cls = pct > 100 ? 'over' : pct >= 100 ? 'full' : '';
+      return `<div class="bal"><div class="n">${esc(o.customer)} · ${esc(o.name)} <small style="font-weight:400;color:#6b7785">${esc(o.id)}</small></div>
+        <small style="color:#6b7785">${fmt(o.targetKg / 1000)} طن · ${esc(PT_AR[o.packType] || o.packType)}${o.shipDate ? ' · شحن ' + esc(o.shipDate) : ''}${o.incoterm ? ' · ' + esc(o.incoterm) : ''}</small>
+        <div class="bar"><i class="${cls}" style="width:${Math.min(pct, 100)}%"></i></div>
+        <div style="font-size:13px;margin-top:4px">معبأ <b>${fmt(r1(o.packedKg / 1000))}</b> طن (${pct}%) · ${fmt(o.units)} جامبو${o.bags ? ' ≈ ' + fmt(o.bags) + ' شكارة' : ''}
+          <span class="pill ${o.status === 'Closed' ? 'ok' : ''}">${o.status === 'Closed' ? 'مقفولة' : 'مفتوحة'}</span></div>
+        ${isAdmin() ? `<div style="margin-top:6px">${o.status === 'Open' ? `<button class="sm" onclick="closeOrder('${esc(o.id)}')">قفل الطلبية</button><button class="sm" onclick="amendOrder('${esc(o.id)}')">تعديل الكمية</button><button class="sm" onclick="voidOrder('${esc(o.id)}')">إلغاء</button>` : `<button class="sm" onclick="printOrder('${esc(o.id)}')">طباعة ملصق الإقفال</button>`}</div>` : ''}
+      </div>`;
+    }).join('') || empty('لسه مفيش طلبيات');
+  }
+}
+
+$('#p-order').onchange = () => {
+  const o = selOrder();
+  if (o) {
+    pick('g-ptype', o.packType);
+    const cp = poolOf(o.customer);
+    pick('g-psrc', cp && cp.avail > 0 ? 'Cust' : 'Stock');
+  }
+  packInfo();
+};
+$('#p-gross').oninput = () => packInfo();
+
+function packInfo() {
+  if (!CFG) return false;
+  const o = selOrder(), g = Number($('#p-gross').value), pt = val('g-ptype'), src = val('g-psrc');
+  let needReason = false;
+  if (!o) { $('#p-info').textContent = 'اختار الطلبية'; $('#p-net').style.display = 'none'; $('#p-reasonBox').style.display = 'none'; return false; }
+  const srcKey = src === 'Cust' ? o.customer : 'Stock';
+  const pool = poolOf(srcKey), avail = pool ? pool.avail : 0;
+  $('#p-info').innerHTML = `${esc(o.name)} — المطلوب ${fmt(o.targetKg / 1000)} طن · معبأ <b>${fmt(r1(o.packedKg / 1000))}</b> طن (${o.pct}%)<br>` +
+    `${fmt(o.units)} جامبو${o.bags ? ' ≈ ' + fmt(o.bags) + ' شكارة' : ''}<br>المتاح من ${esc(resLabel(srcKey))}: <b>${fmt(avail)} كجم</b>`;
+  const parts = [];
+  if (g > 0) {
+    const net = r1(g - CFG.tare);
+    const est = pt === 'Bag25' ? net / 25 : pt === 'Bag10' ? net / 10 : null;
+    $('#p-net').style.display = 'block';
+    $('#p-net').innerHTML = `الصافي: <b>${fmt(net)} كجم</b>` + (est != null ? ` · ≈ ${est.toFixed(1)} شكارة` : ' · جامبو واحد');
+    if (net < CFG.packMin || net > CFG.packMax) parts.push(`الصافي خارج المعتاد (${CFG.packMin}–${CFG.packMax} كجم)`);
+    if (net > avail) parts.push('أكبر من المتاح في المصدر ده');
+    needReason = parts.length > 0;
+  } else $('#p-net').style.display = 'none';
+  $('#p-reasonBox').style.display = needReason ? 'block' : 'none';
+  $('#p-rtext').textContent = parts.join(' · ') + '. اكتب السبب:';
+  return needReason;
+}
+
+async function savePack(confirmDup) {
+  $('#p-msg').className = 'msg';
+  const o = selOrder(), g = Number($('#p-gross').value), machine = val('g-pmach');
+  if (!machine) return setMsg('#p-msg', 'اختار ماكينة التعبئة', 'err');
+  if (!o) return setMsg('#p-msg', 'اختار الطلبية', 'err');
+  if (!(g > CFG.tare)) return setMsg('#p-msg', 'اكتب وزن الجامبو من الميزان', 'err');
+  const needReason = packInfo();
+  const b = $('#p-save'); b.disabled = true;
+  try {
+    const j = await api('add_pack', {
+      machine, order: o.id, packType: val('g-ptype'), source: val('g-psrc') === 'Cust' ? o.customer : 'Stock',
+      gross: g, reason: needReason ? $('#p-reason').value : '', confirmDup: !!confirmDup
+    });
+    let t = `اتسجل ${j.id} · صافي ${fmt(j.net)} كجم` + (j.est !== '' ? ` ≈ ${j.est} شكارة` : '') +
+      ` · الطلبية: ${fmt(r1(j.packedKg / 1000))} من ${fmt(j.target / 1000)} طن (${j.pct}%) · ${j.units} جامبو`;
+    let cls = 'ok';
+    if (j.over) { t += ' · ⚠ تعدّينا الكمية المطلوبة!'; cls = 'err'; }
+    else if (j.reached) { t += ' · ✅ وصلنا للكمية المطلوبة. بلّغ المدير عشان يقفل الطلبية'; cls = 'ok'; }
+    else if (j.pct >= 95) { t += ' · ⚠ قربنا من الكمية المطلوبة'; cls = 'warn'; }
+    setMsg('#p-msg', t, cls);
+    $('#p-gross').value = ''; $('#p-gross').focus();
+    await loadPack();
+  } catch (e) {
+    if (e.message === 'dup') {
+      if (confirm(`في جامبو بنفس الماكينة والطلبية والوزن اتسجل من دقايق (${e.data.dup}).\nتسجل تاني برضو؟`)) { b.disabled = false; return savePack(true); }
+    } else setMsg('#p-msg', errText(e), 'err');
+  }
+  b.disabled = false;
+}
+$('#p-save').onclick = () => savePack(false);
+
+async function amendPack(id) {
+  const g = prompt('الوزن القائم الجديد (كجم) لـ ' + id); if (!g) return;
+  const r = prompt('سبب التعديل (إجباري)'); if (!r) return;
+  try { await api('amend', { kind: 'pack', id, gross: Number(g), reason: r }); loadPack(); } catch (e) { alert(errText(e)); }
+}
+async function voidPack(id) {
+  const r = prompt('سبب إلغاء ' + id + ' (إجباري)'); if (!r) return;
+  try { await api('void', { kind: 'pack', id, reason: r }); loadPack(); } catch (e) { alert(errText(e)); }
+}
+
+// orders (admin)
+$('#o-save').onclick = async () => {
+  $('#o-msg').className = 'msg';
+  const c = $('#o-cust').value, t = Number($('#o-tons').value);
+  if (!c) return setMsg('#o-msg', 'اختار العميل', 'err');
+  if (!(t > 0)) return setMsg('#o-msg', 'اكتب الكمية بالطن', 'err');
+  try {
+    const j = await api('add_order', { customer: c, tons: t, packType: val('g-optype'), shipDate: $('#o-ship').value.trim(), incoterm: $('#o-inco').value.trim(), notes: $('#o-notes').value.trim() });
+    setMsg('#o-msg', 'اتعملت الطلبية ' + j.id, 'ok');
+    $('#o-tons').value = ''; $('#o-ship').value = ''; $('#o-notes').value = '';
+    await loadPack();
+  } catch (e) { setMsg('#o-msg', errText(e), 'err'); }
+};
+async function closeOrder(id) {
+  const o = PK.orders.find(x => x.id === id);
+  const msg = o && o.pct < 100 ? `الطلبية لسه ${o.pct}% من المطلوب. تقفلها برضو؟` : 'تقفل الطلبية دي؟';
+  if (!confirm(msg)) return;
+  try { await api('close_order', { id }); await loadPack(); } catch (e) { alert(errText(e)); }
+}
+async function amendOrder(id) {
+  const t = prompt('الكمية الجديدة بالطن'); if (!t) return;
+  const r = prompt('سبب التعديل (إجباري)'); if (!r) return;
+  try { await api('amend', { kind: 'order', id, target_tons: Number(t), reason: r }); loadPack(); } catch (e) { alert(errText(e)); }
+}
+async function voidOrder(id) {
+  const r = prompt('سبب إلغاء الطلبية ' + id + ' (إجباري)'); if (!r) return;
+  try { await api('void', { kind: 'order', id, reason: r }); loadPack(); } catch (e) { alert(errText(e)); }
+}
+
+function printOrder(id) {
+  const o = PK.orders.find(x => x.id === id); if (!o) return;
+  const base = new URL('index.html', location.href).href;
+  const q = new URLSearchParams({
+    id: o.id, w: (o.packedKg / 1000).toFixed(2) + ' T', b: o.units + ' packed units' + (o.bags ? ' / ~' + o.bags + ' bags' : ''),
+    c: o.customer, l: 'Packing', pd: (o.closedAt || '').slice(0, 10), sd: o.shipDate || '', bt: o.id, inc: o.incoterm || ''
+  });
+  $('#printArea').innerHTML = `<div class="olabel">
+    <div class="brand">OVERSEAS GLOBAL</div>
+    <div class="closed">ORDER CLOSED</div>
+    <div class="oid">${esc(o.id)}</div>
+    <div class="cust">${esc(o.customer)} — ${esc(o.name)}</div>
+    <div class="tot">${(o.packedKg / 1000).toFixed(2)} T</div>
+    <div class="line">${fmt(o.units)} units${o.bags ? ' · ≈ ' + fmt(o.bags) + ' bags' : ''} · ${esc(o.packType)}</div>
+    <div class="line">Ship: ${esc(o.shipDate || '—')} · ${esc(o.incoterm || '')}</div>
+    <div class="line">Closed: ${esc((o.closedAt || '').slice(0, 10))} by ${esc(o.closedBy || '')}</div>
+    <div id="oq"></div></div>`;
+  new QRCode($('#oq'), { text: base + '?' + q.toString(), width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+  setTimeout(() => window.print(), 500);
+}
+
+// ---------- production list ----------
 async function loadList() {
   try { ROWS = (await api('list', { limit: 200 })).rows; } catch (e) { return; }
   const today = new Date().toLocaleDateString('sv-SE');
@@ -651,7 +915,7 @@ async function loadList() {
     <div class="row ${r.Void === 'yes' ? 'void' : ''}">
       <div class="m"><b>${esc(r.ID)}</b>
         <small>${esc(PRESS_AR[r.Press] || r.Press)} · ${esc(SALT_AR[r.Salt] || '—')} · ${esc(TYPE_AR[r.Type] || r.Type)} · ${esc(r.Supplier)}</small>
-        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(r.Reservation)} · ${esc(ST_AR[r.Status] || r.Status)}</small>${flagPill(r)}
+        <small>${esc(r.Timestamp)} · ${esc(r.User)} · ${esc(resLabel(r.Reservation))} · ${esc(ST_AR[r.Status] || r.Status)}</small>${flagPill(r)}
       </div>
       <div class="w">${fmt(r.Weight_kg)}</div>
       ${isSup() && r.Void !== 'yes' ? `<div><button class="sm" onclick="amend('${esc(r.ID)}')">تعديل</button><button class="sm" onclick="voidJ('${esc(r.ID)}')">إلغاء</button></div>` : ''}
@@ -674,8 +938,18 @@ async function loadReports() {
   const p = $('#rp-period').value, today = new Date().toLocaleDateString('sv-SE');
   const from = p === '7' ? new Date(Date.now() - 7 * 864e5).toLocaleDateString('sv-SE') : p === 'month' ? today.slice(0, 8) + '01' : '';
   try {
-    const [rp, li, rw, sv] = await Promise.all([api('report', { from }), api('list', { limit: 300 }), api('raw_list', { limit: 100 }), api('pending_sieve')]);
+    const [rp, li, rw, sv, pk] = await Promise.all([api('report', { from }), api('list', { limit: 300 }), api('raw_list', { limit: 100 }), api('pending_sieve'), api('pack_list')]);
     ROWS = li.rows;
+    $('#rp-orders').innerHTML = pk.orders.map(o => {
+      const cls = o.pct > 100 ? 'over' : o.pct >= 100 ? 'full' : '';
+      return `<div class="bal"><div class="n">${esc(o.customer)} · ${esc(o.name)} <span class="pill ${o.status === 'Closed' ? 'ok' : ''}">${o.status === 'Closed' ? 'مقفولة' : 'مفتوحة'}</span></div>
+        <div class="bar"><i class="${cls}" style="width:${Math.min(o.pct, 100)}%"></i></div>
+        <div style="font-size:13px;margin-top:4px">${fmt(r1(o.packedKg / 1000))} من ${fmt(o.targetKg / 1000)} طن (${o.pct}%) · ${fmt(o.units)} جامبو${o.bags ? ' ≈ ' + fmt(o.bags) + ' شكارة' : ''}</div></div>`;
+    }).join('') || empty('مفيش طلبيات');
+    $('#rp-pools').innerHTML = pk.pools.map(o => `
+      <div class="bal"><div class="n">${esc(resLabel(o.pool))}</div>
+        <div class="g"><div>جاهز<b>${fmt(o.ready)}</b></div><div>اتعبّى<b>${fmt(o.packed)}</b></div>
+        <div class="${o.avail < 0 ? 'low' : 'good'}">المتاح<b>${fmt(o.avail)}</b></div></div></div>`).join('') || empty('مفيش أرصدة');
     $('#rp-waste').innerHTML = rp.rows.map(o => `
       <div class="bal"><div class="n">${esc(o.supplier)} · ${esc(SALT_AR[o.salt] || o.salt)}</div>
         <div class="g">
@@ -701,9 +975,10 @@ async function loadReports() {
     rw.issues.concat(rw.receipts).filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
     rw.returns.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
     sv.runs.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
+    pk.packs.filter(r => r.Flag).forEach(r => items.push({ t: r.Timestamp, id: r.ID, who: r.User, f: r }));
     items.sort((a, b) => b.t.localeCompare(a.t));
     $('#excRows').innerHTML = items.slice(0, 80).map(x => `
-      <div class="row ${x.f.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(x.id)}</b> <small>${esc(x.f.Supplier || '')}</small>
+      <div class="row ${x.f.Void === 'yes' ? 'void' : ''}"><div class="m"><b>${esc(x.id)}</b> <small>${esc(x.f.Supplier || x.f.Customer || '')}</small>
         <small>${esc(x.t)} · ${esc(x.who)}</small>${flagPill(x.f)}</div></div>`).join('') || empty('مفيش استثناءات');
   } catch (e) { $('#rp-waste').innerHTML = empty(errText(e)); }
 }
